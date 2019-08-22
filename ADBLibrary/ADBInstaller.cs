@@ -33,13 +33,21 @@ namespace AC.AndroidUtils.ADB
     {
         public static void InstallADBTo(string path)
         {
+            KillADBProcess();
             IOUtil.WriteBytesToFile(Resources.adbE, path + "\\adbE.exe");
             Process.Start(path + "\\adbE.exe").WaitForExit();
         }
 
-        public static void KillADBServer()
+        public static void KillADBProcess()
         {
+            Process[] pg = Process.GetProcessesByName("adb.exe");
 
+            foreach(Process p in pg)
+            {
+                p.Kill();
+                p.Close();
+                p.Dispose();
+            }
         }
     }
 }

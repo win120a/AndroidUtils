@@ -36,24 +36,24 @@ namespace AC.AndroidUtils.GUI
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            ADBInstance adbi = new ADBInstance("D:\\adb");
-            adbi.ConnectToRemoteDevice("192.168.1.110", 5555);
+            //ADBInstance adbi = new ADBInstance("D:\\adb");
+            //adbi.ConnectToRemoteDevice("192.168.1.110", 5555);
 
-            List<AndroidDevice> devices = adbi.GetAndroidDeviceList();
-            AndroidDevice device = null;
+            //List<AndroidDevice> devices = adbi.GetAndroidDeviceList();
+            //AndroidDevice device = null;
 
-            foreach (AndroidDevice d in devices)
-            {
-                MessageBox.Show(d.ToString());
-                if (d.Serial.StartsWith("192.168"))
-                {
-                    device = d;
-                }
-            }
+            //foreach (AndroidDevice d in devices)
+            //{
+            //    MessageBox.Show(d.ToString());
+            //    if (d.Serial.StartsWith("192.168"))
+            //    {
+            //        device = d;
+            //    }
+            //}
 
-            adbi.RebootToRecovery(device);
+            //adbi.RebootToRecovery(device);
 
-            //Application.Run(new Form1());
+            Application.Run(new ADBWindow());
         }
     }
 }

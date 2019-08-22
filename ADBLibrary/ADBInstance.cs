@@ -56,7 +56,7 @@ namespace AC.AndroidUtils.ADB
 
         public void InstallApp(AndroidDevice device, string apkPath)
         {
-            InvokeADBCommand("install \"" + apkPath + "\"", true);
+            InvokeADBCommand(device, "install \"" + apkPath + "\"", true);
         }
 
         public void InstallApp(AndroidDevice device, AndroidApplication aa)
@@ -76,7 +76,12 @@ namespace AC.AndroidUtils.ADB
 
         public void ConnectToRemoteDevice(string address, uint port)
         {
-            InvokeADBCommand("connect " + address + ":" + port, false);
+            InvokeADBCommand("connect " + address + ":" + port, true);
+        }
+
+        public void DisconnectRemoteDevice(string address, uint port)
+        {
+            InvokeADBCommand("disconnect " + address + ":" + port, true);
         }
 
         private Process InvokeADBCommand(string arg, bool waitToFinish)
@@ -89,6 +94,7 @@ namespace AC.AndroidUtils.ADB
             psi.RedirectStandardError = true;
             psi.RedirectStandardInput = true;
             psi.UseShellExecute = false;
+            psi.CreateNoWindow = true;
             psi.WindowStyle = ProcessWindowStyle.Hidden;
 
             Process p = new Process();
