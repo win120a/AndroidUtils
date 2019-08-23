@@ -23,21 +23,15 @@ namespace AC.AndroidUtils.GUI.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string adbPath {
             get {
                 return ((string)(this["adbPath"]));
             }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool useInternalADB {
-            get {
-                return ((bool)(this["useInternalADB"]));
+            set {
+                this["adbPath"] = value;
             }
         }
     }

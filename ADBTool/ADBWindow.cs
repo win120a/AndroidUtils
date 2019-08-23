@@ -20,13 +20,15 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using AC.AndroidUtils.ADB;
+using System.Diagnostics;
 using AC.AndroidUtils.Shared;
+using AC.AndroidUtils.GUI.Properties;
 
 namespace AC.AndroidUtils.GUI
 {
     public partial class ADBWindow : Form
     {
-        string path = "D:\\adb";
+        string path;
         ADBInstance adbi;
         Dictionary<int, AndroidDevice> devicesMap;
 
@@ -36,10 +38,34 @@ namespace AC.AndroidUtils.GUI
             devicesMap = new Dictionary<int, AndroidDevice>();
         }
 
-        private void ADBWindow_Load(object sender, System.EventArgs e)
+        private void LoadADB()
         {
+            path = Settings.Default.adbPath;
             adbi = new ADBInstance(path);
             LoadDevices();
+        }
+
+        private void ADBWindow_Load(object sender, System.EventArgs e)
+        {
+            if(Settings.Default.adbPath != "" & ADBInstaller.CheckADB(Settings.Default.adbPath))
+            {
+                LoadADB();
+                adbPath.Text = Settings.Default.adbPath;
+            }
+            else
+            {
+                MessageBox.Show("Please load ADB in this window.", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                SetButtonsAvaliableOrNot(false);
+            }
+        }
+
+        private void SetButtonsAvaliableOrNot(bool avail)
+        {
+            connectNet.Enabled = avail;
+            disconnectNet.Enabled = avail;
+            reboot.Enabled = avail;
+            reboot_recovery.Enabled = avail;
+            refresh.Enabled = avail;
         }
 
         private void LoadDevices()
@@ -79,6 +105,59 @@ namespace AC.AndroidUtils.GUI
         private void Reboot_recovery_Click(object sender, System.EventArgs e)
         {
             adbi.Reboot(devicesMap[devList.SelectedIndex]);
+        }
+
+        private void BrowseADBPath_Click(object sender, System.EventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                adbPath.Text = fbd.SelectedPath;
+            }
+        }
+
+        private void Install_Click(object sender, System.EventArgs e)
+        {
+            ADBInstaller.InstallADBTo(adbPath.Text);
+            MessageBox.Show("Install successfully.", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void Load_Click_1(object sender, System.EventArgs e)
+        {
+            if (!ADBInstaller.CheckADB(adbPath.Text))
+            {
+                MessageBox.Show("This folder doesn't contain ADB.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            Settings.Default.adbPath = adbPath.Text;
+            path = adbPath.Text;
+            Settings.Default.Save();
+
+            LoadADB();
+            LoadDevices();
+
+            SetButtonsAvaliableOrNot(true);
+
+            MessageBox.Show("Load successfully.", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void Uninstall_Click(object sender, System.EventArgs e)
+        {
+            if (!ADBInstaller.CheckADB(adbPath.Text))
+            {
+                MessageBox.Show("This folder doesn't contain ADB.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            DialogResult dr = MessageBox.Show("ADB will be uninstalled, and this app can NOT be used!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if(dr == DialogResult.Yes)
+            {
+                ADBInstaller.UninstallADB(adbPath.Text);
+                SetButtonsAvaliableOrNot(false);
+                MessageBox.Show("Uninstall successfully.", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

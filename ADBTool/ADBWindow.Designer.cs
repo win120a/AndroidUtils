@@ -29,21 +29,29 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.connectNet = new System.Windows.Forms.Button();
+            this.disconnectNet = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.netADB_port = new System.Windows.Forms.TextBox();
+            this.netADB_ip = new System.Windows.Forms.TextBox();
             this.devices = new System.Windows.Forms.GroupBox();
             this.refresh = new System.Windows.Forms.Button();
             this.devList = new System.Windows.Forms.ListBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.netADB_ip = new System.Windows.Forms.TextBox();
-            this.netADB_port = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.disconnectNet = new System.Windows.Forms.Button();
-            this.connectNet = new System.Windows.Forms.Button();
-            this.reboot = new System.Windows.Forms.Button();
-            this.reboot_recovery = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.reboot_recovery = new System.Windows.Forms.Button();
+            this.reboot = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.uninstall = new System.Windows.Forms.Button();
+            this.install = new System.Windows.Forms.Button();
+            this.browseADBPath = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.adbPath = new System.Windows.Forms.TextBox();
+            this.load = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.devices.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -59,6 +67,49 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Network Debugging";
+            // 
+            // connectNet
+            // 
+            this.connectNet.Location = new System.Drawing.Point(235, 80);
+            this.connectNet.Name = "connectNet";
+            this.connectNet.Size = new System.Drawing.Size(98, 35);
+            this.connectNet.TabIndex = 4;
+            this.connectNet.Text = "Connect";
+            this.connectNet.UseVisualStyleBackColor = true;
+            this.connectNet.Click += new System.EventHandler(this.ConnectNet_Click);
+            // 
+            // disconnectNet
+            // 
+            this.disconnectNet.Location = new System.Drawing.Point(339, 80);
+            this.disconnectNet.Name = "disconnectNet";
+            this.disconnectNet.Size = new System.Drawing.Size(130, 35);
+            this.disconnectNet.TabIndex = 3;
+            this.disconnectNet.Text = "Disconnect";
+            this.disconnectNet.UseVisualStyleBackColor = true;
+            this.disconnectNet.Click += new System.EventHandler(this.DisconnectNet_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(379, 49);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(17, 18);
+            this.label1.TabIndex = 2;
+            this.label1.Text = ":";
+            // 
+            // netADB_port
+            // 
+            this.netADB_port.Location = new System.Drawing.Point(402, 46);
+            this.netADB_port.Name = "netADB_port";
+            this.netADB_port.Size = new System.Drawing.Size(67, 28);
+            this.netADB_port.TabIndex = 1;
+            // 
+            // netADB_ip
+            // 
+            this.netADB_ip.Location = new System.Drawing.Point(21, 46);
+            this.netADB_ip.Name = "netADB_ip";
+            this.netADB_ip.Size = new System.Drawing.Size(352, 28);
+            this.netADB_ip.TabIndex = 0;
             // 
             // devices
             // 
@@ -97,63 +148,19 @@
             this.groupBox3.Controls.Add(this.reboot);
             this.groupBox3.Location = new System.Drawing.Point(531, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(444, 412);
+            this.groupBox3.Size = new System.Drawing.Size(444, 186);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Operations";
+            this.groupBox3.Text = "Device Operations";
             // 
-            // netADB_ip
+            // button3
             // 
-            this.netADB_ip.Location = new System.Drawing.Point(21, 46);
-            this.netADB_ip.Name = "netADB_ip";
-            this.netADB_ip.Size = new System.Drawing.Size(352, 28);
-            this.netADB_ip.TabIndex = 0;
-            // 
-            // netADB_port
-            // 
-            this.netADB_port.Location = new System.Drawing.Point(402, 46);
-            this.netADB_port.Name = "netADB_port";
-            this.netADB_port.Size = new System.Drawing.Size(67, 28);
-            this.netADB_port.TabIndex = 1;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(379, 49);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(17, 18);
-            this.label1.TabIndex = 2;
-            this.label1.Text = ":";
-            // 
-            // disconnectNet
-            // 
-            this.disconnectNet.Location = new System.Drawing.Point(339, 80);
-            this.disconnectNet.Name = "disconnectNet";
-            this.disconnectNet.Size = new System.Drawing.Size(130, 35);
-            this.disconnectNet.TabIndex = 3;
-            this.disconnectNet.Text = "Disconnect";
-            this.disconnectNet.UseVisualStyleBackColor = true;
-            this.disconnectNet.Click += new System.EventHandler(this.DisconnectNet_Click);
-            // 
-            // connectNet
-            // 
-            this.connectNet.Location = new System.Drawing.Point(235, 80);
-            this.connectNet.Name = "connectNet";
-            this.connectNet.Size = new System.Drawing.Size(98, 35);
-            this.connectNet.TabIndex = 4;
-            this.connectNet.Text = "Connect";
-            this.connectNet.UseVisualStyleBackColor = true;
-            this.connectNet.Click += new System.EventHandler(this.ConnectNet_Click);
-            // 
-            // reboot
-            // 
-            this.reboot.Location = new System.Drawing.Point(12, 35);
-            this.reboot.Name = "reboot";
-            this.reboot.Size = new System.Drawing.Size(197, 38);
-            this.reboot.TabIndex = 0;
-            this.reboot.Text = "Reboot";
-            this.reboot.UseVisualStyleBackColor = true;
-            this.reboot.Click += new System.EventHandler(this.Reboot_Click);
+            this.button3.Location = new System.Drawing.Point(12, 124);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(197, 38);
+            this.button3.TabIndex = 2;
+            this.button3.Text = "button3";
+            this.button3.UseVisualStyleBackColor = true;
             // 
             // reboot_recovery
             // 
@@ -165,31 +172,110 @@
             this.reboot_recovery.UseVisualStyleBackColor = true;
             this.reboot_recovery.Click += new System.EventHandler(this.Reboot_recovery_Click);
             // 
-            // button3
+            // reboot
             // 
-            this.button3.Location = new System.Drawing.Point(12, 124);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(197, 38);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "button3";
-            this.button3.UseVisualStyleBackColor = true;
+            this.reboot.Location = new System.Drawing.Point(12, 35);
+            this.reboot.Name = "reboot";
+            this.reboot.Size = new System.Drawing.Size(197, 38);
+            this.reboot.TabIndex = 0;
+            this.reboot.Text = "Reboot";
+            this.reboot.UseVisualStyleBackColor = true;
+            this.reboot.Click += new System.EventHandler(this.Reboot_Click);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.uninstall);
+            this.groupBox2.Controls.Add(this.install);
+            this.groupBox2.Controls.Add(this.browseADBPath);
+            this.groupBox2.Controls.Add(this.label2);
+            this.groupBox2.Controls.Add(this.adbPath);
+            this.groupBox2.Controls.Add(this.load);
+            this.groupBox2.Location = new System.Drawing.Point(531, 221);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(444, 150);
+            this.groupBox2.TabIndex = 3;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "ADB Operations";
+            // 
+            // uninstall
+            // 
+            this.uninstall.Location = new System.Drawing.Point(317, 76);
+            this.uninstall.Name = "uninstall";
+            this.uninstall.Size = new System.Drawing.Size(121, 43);
+            this.uninstall.TabIndex = 5;
+            this.uninstall.Text = "Uninstall";
+            this.uninstall.UseVisualStyleBackColor = true;
+            this.uninstall.Click += new System.EventHandler(this.Uninstall_Click);
+            // 
+            // install
+            // 
+            this.install.Location = new System.Drawing.Point(166, 76);
+            this.install.Name = "install";
+            this.install.Size = new System.Drawing.Size(121, 43);
+            this.install.TabIndex = 4;
+            this.install.Text = "Install";
+            this.install.UseVisualStyleBackColor = true;
+            this.install.Click += new System.EventHandler(this.Install_Click);
+            // 
+            // browseADBPath
+            // 
+            this.browseADBPath.Location = new System.Drawing.Point(391, 26);
+            this.browseADBPath.Name = "browseADBPath";
+            this.browseADBPath.Size = new System.Drawing.Size(47, 30);
+            this.browseADBPath.TabIndex = 3;
+            this.browseADBPath.Text = "...";
+            this.browseADBPath.UseVisualStyleBackColor = true;
+            this.browseADBPath.Click += new System.EventHandler(this.BrowseADBPath_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(5, 34);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(80, 18);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "ADB Path";
+            // 
+            // adbPath
+            // 
+            this.adbPath.Enabled = false;
+            this.adbPath.Location = new System.Drawing.Point(88, 27);
+            this.adbPath.Name = "adbPath";
+            this.adbPath.Size = new System.Drawing.Size(297, 28);
+            this.adbPath.TabIndex = 1;
+            // 
+            // load
+            // 
+            this.load.Location = new System.Drawing.Point(12, 76);
+            this.load.Name = "load";
+            this.load.Size = new System.Drawing.Size(121, 43);
+            this.load.TabIndex = 0;
+            this.load.Text = "Load";
+            this.load.UseVisualStyleBackColor = true;
+            this.load.Click += new System.EventHandler(this.Load_Click_1);
             // 
             // ADBWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(996, 520);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.devices);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ADBWindow";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ADB Utility";
             this.Load += new System.EventHandler(this.ADBWindow_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.devices.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -209,6 +295,13 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button reboot_recovery;
         private System.Windows.Forms.Button reboot;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button browseADBPath;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox adbPath;
+        private System.Windows.Forms.Button load;
+        private System.Windows.Forms.Button uninstall;
+        private System.Windows.Forms.Button install;
     }
 }
 

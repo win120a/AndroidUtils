@@ -40,7 +40,7 @@ namespace AC.AndroidUtils.ADB
 
             private set
             {
-                if (!Directory.Exists(value) || !File.Exists(value + "\\adb.exe"))
+                if (!ADBInstaller.CheckADB(value))
                 {
                     throw new FileNotFoundException();
                 }

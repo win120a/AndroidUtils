@@ -17,15 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using AC.AndroidUtils.ADB.Properties;
-using System.Diagnostics;
 using AC.AndroidUtils.Shared;
+using System.Diagnostics;
+using System.IO;
 
 namespace AC.AndroidUtils.ADB
 {
@@ -35,19 +30,47 @@ namespace AC.AndroidUtils.ADB
         {
             KillADBProcess();
             IOUtil.WriteBytesToFile(Resources.adbE, path + "\\adbE.exe");
-            Process.Start(path + "\\adbE.exe").WaitForExit();
+
+            ProcessStartInfo psi = new ProcessStartInfo(path + "\\adbE.exe");
+            psi.WorkingDirectory = path;
+
+            Process p = new Process();
+            p.StartInfo = psi;
+
+            p.Start();
+            p.WaitForExit();
+        }
+
+        public static bool CheckADB(string path)
+        {
+            bool v1 = Directory.Exists(path);
+            bool v2 = File.Exists(path + "\\adb.exe");
+            bool v3 = File.Exists(path + "\\AdbWinApi.dll");
+            bool v4 = File.Exists(path + "\\AdbWinUsbApi.dll");
+
+            return v1 & v2 & v3 & v4;
         }
 
         public static void KillADBProcess()
         {
-            Process[] pg = Process.GetProcessesByName("adb.exe");
+            Process[] pg = Process.GetProcessesByName("adb");
 
-            foreach(Process p in pg)
+            foreach (Process p in pg)
             {
                 p.Kill();
+                p.WaitForExit();
                 p.Close();
                 p.Dispose();
             }
+        }
+
+        public static void UninstallADB(string path)
+        {
+            KillADBProcess();
+
+            File.Delete(path + "\\adb.exe");
+            File.Delete(path + "\\AdbWinApi.dll");
+            File.Delete(path + "\\AdbWinUsbApi.dll");
         }
     }
 }
