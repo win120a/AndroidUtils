@@ -1,8 +1,8 @@
 This application uses the ApkTool (https://github.com/iBotPeaches/Apktool) project, 
-which is licensed under the Apache License, to display the Package Details.
+which is licensed under the Apache License, to display package (apk) details.
 
 Although the ApkTool is complied from source, I didn't alter the code.
-You can see the code in the ApkTool-master.7z file.
+The code of ApkTool, which is used by this app, is in the Apktool-master.7z file.
 
 The license is attached below:
 
