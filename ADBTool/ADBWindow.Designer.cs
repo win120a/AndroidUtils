@@ -38,7 +38,7 @@
             this.refresh = new System.Windows.Forms.Button();
             this.devList = new System.Windows.Forms.ListBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.button3 = new System.Windows.Forms.Button();
+            this.shell = new System.Windows.Forms.Button();
             this.reboot_recovery = new System.Windows.Forms.Button();
             this.reboot = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -48,6 +48,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.adbPath = new System.Windows.Forms.TextBox();
             this.load = new System.Windows.Forms.Button();
+            this.devStatus = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.devices.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -113,6 +114,7 @@
             // 
             // devices
             // 
+            this.devices.Controls.Add(this.devStatus);
             this.devices.Controls.Add(this.refresh);
             this.devices.Controls.Add(this.devList);
             this.devices.Location = new System.Drawing.Point(12, 177);
@@ -143,7 +145,7 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.button3);
+            this.groupBox3.Controls.Add(this.shell);
             this.groupBox3.Controls.Add(this.reboot_recovery);
             this.groupBox3.Controls.Add(this.reboot);
             this.groupBox3.Location = new System.Drawing.Point(531, 12);
@@ -153,14 +155,15 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Device Operations";
             // 
-            // button3
+            // shell
             // 
-            this.button3.Location = new System.Drawing.Point(12, 124);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(197, 38);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "button3";
-            this.button3.UseVisualStyleBackColor = true;
+            this.shell.Location = new System.Drawing.Point(12, 124);
+            this.shell.Name = "shell";
+            this.shell.Size = new System.Drawing.Size(197, 38);
+            this.shell.TabIndex = 2;
+            this.shell.Text = "Run shell command";
+            this.shell.UseVisualStyleBackColor = true;
+            this.shell.Click += new System.EventHandler(this.Shell_Click);
             // 
             // reboot_recovery
             // 
@@ -254,6 +257,16 @@
             this.load.UseVisualStyleBackColor = true;
             this.load.Click += new System.EventHandler(this.Load_Click_1);
             // 
+            // devStatus
+            // 
+            this.devStatus.Location = new System.Drawing.Point(215, 253);
+            this.devStatus.Name = "devStatus";
+            this.devStatus.Size = new System.Drawing.Size(149, 38);
+            this.devStatus.TabIndex = 4;
+            this.devStatus.Text = "Device Status";
+            this.devStatus.UseVisualStyleBackColor = true;
+            this.devStatus.Click += new System.EventHandler(this.DevStatus_Click);
+            // 
             // ADBWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
@@ -292,7 +305,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox netADB_port;
         private System.Windows.Forms.TextBox netADB_ip;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button shell;
         private System.Windows.Forms.Button reboot_recovery;
         private System.Windows.Forms.Button reboot;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -302,6 +315,7 @@
         private System.Windows.Forms.Button load;
         private System.Windows.Forms.Button uninstall;
         private System.Windows.Forms.Button install;
+        private System.Windows.Forms.Button devStatus;
     }
 }
 

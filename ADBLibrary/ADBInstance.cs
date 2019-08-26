@@ -116,8 +116,6 @@ namespace AC.AndroidUtils.ADB
             if (waitToFinish)
             {
                 p.WaitForExit();
-                p.Close();
-                return null;
             }
 
             return p;
@@ -185,6 +183,52 @@ namespace AC.AndroidUtils.ADB
             InvokeADBCommand("wait-for-device", true);
         }
 
+        public void PushFile(AndroidDevice device, string localPath, string remotePath)
+        {
+            StringBuilder sBuilder = new StringBuilder();
+
+            sBuilder.Append("push \"");
+            sBuilder.Append(localPath);
+            sBuilder.Append("\" ");
+            sBuilder.Append("\"");
+            sBuilder.Append(remotePath);
+            sBuilder.Append("\"");
+
+            InvokeADBCommand(device, sBuilder.ToString(), true);
+        }
+
+        public void PullFileFromDevice(AndroidDevice device, string localPath, string remotePath)
+        {
+            StringBuilder sBuilder = new StringBuilder();
+
+            sBuilder.Append("pull \"");
+            sBuilder.Append(remotePath);
+            sBuilder.Append("\" ");
+            sBuilder.Append("\"");
+            sBuilder.Append(localPath);
+            sBuilder.Append("\"");
+
+            InvokeADBCommand(device, sBuilder.ToString(), true);
+        }
+
+        public string RunCommand(AndroidDevice device, string command, bool runAsRoot)
+        {
+            StringBuilder retS = new StringBuilder();
+            string argH = runAsRoot ? "shell su -c " : "shell ";
+            string arg = argH + command;
+            Process adbP = InvokeADBCommand(device, arg, true);
+
+            using(StreamReader sr = adbP.StandardOutput)
+            {
+                while (!sr.EndOfStream)
+                {
+                    retS.AppendLine(sr.ReadLine());
+                }
+            }
+
+            return retS.ToString();
+        }
+
         /*
          * Use ADB Path to identify the object.
          */
@@ -209,6 +253,9 @@ namespace AC.AndroidUtils.ADB
             return ADBPath.GetHashCode();
         }
 
+        /*
+         * Definition of C# Operator.
+         */
         public static bool operator ==(ADBInstance i1, ADBInstance i2)
         {
             return i1.Equals(i2);

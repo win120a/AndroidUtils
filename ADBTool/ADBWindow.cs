@@ -130,7 +130,9 @@ namespace AC.AndroidUtils.GUI
                 return;
             }
 
-            adbi.Reboot(devicesMap[devList.SelectedIndex]);
+            adbi.RebootToRecovery(devicesMap[devList.SelectedIndex]);
+
+            LoadDevices();
         }
 
         private void BrowseADBPath_Click(object sender, System.EventArgs e)
@@ -193,5 +195,27 @@ namespace AC.AndroidUtils.GUI
         }
 
         private bool IsEmpty(string str) => str.Length == 0;
+
+        private void DevStatus_Click(object sender, System.EventArgs e)
+        {
+            if (!IsBoxSelected(devList))
+            {
+                WarningDialog("Please select a device.", "Warning");
+                return;
+            }
+
+            MessageBox.Show(devicesMap[devList.SelectedIndex].ToString());
+        }
+
+        private void Shell_Click(object sender, System.EventArgs e)
+        {
+            if (!IsBoxSelected(devList))
+            {
+                WarningDialog("Please select a device.", "Warning");
+                return;
+            }
+
+            new ADBShell(devicesMap[devList.SelectedIndex], adbi).Show();
+        }
     }
 }

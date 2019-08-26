@@ -36,22 +36,7 @@ namespace AC.AndroidUtils.GUI
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //ADBInstance adbi = new ADBInstance("D:\\adb");
-            //adbi.ConnectToRemoteDevice("192.168.1.110", 5555);
-
-            //List<AndroidDevice> devices = adbi.GetAndroidDeviceList();
-            //AndroidDevice device = null;
-
-            //foreach (AndroidDevice d in devices)
-            //{
-            //    MessageBox.Show(d.ToString());
-            //    if (d.Serial.StartsWith("192.168"))
-            //    {
-            //        device = d;
-            //    }
-            //}
-
-            //adbi.RebootToRecovery(device);
+            // MessageBox.Show(IOUtil.GenerateRandomFileName("sh"));
 
             Application.Run(new ADBWindow());
         }

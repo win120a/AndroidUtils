@@ -18,6 +18,8 @@
 */
 
 using System.IO;
+using System;
+using System.Text;
 
 namespace AC.AndroidUtils.Shared
 {
@@ -34,6 +36,36 @@ namespace AC.AndroidUtils.Shared
                 bw.Flush();
                 bw.Close();
             }
+        }
+
+        public static string GenerateRandomFileName(string ext)
+        {
+            StringBuilder builder = new StringBuilder();
+            Random rand = new Random();
+            char[] aplhC = { 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f' };
+
+            for(int i = 0; i < 6; i++)
+            {
+                int num1 = rand.Next(DateTime.Now.Second, DateTime.Now.Year);
+
+                bool alph = (num1 % 2) != 0;
+
+                if (alph)
+                {
+                    int num2 = rand.Next(0, 12);   // [0, 12)
+
+                    builder.Append(aplhC[num2]);
+                }
+                else
+                {
+                    int num2 = rand.Next(0, 11);   // [0, 11)
+                    builder.Append(num2);
+                }
+            }
+
+            builder.Append(".").Append(ext);
+
+            return builder.ToString();
         }
     }
 }
