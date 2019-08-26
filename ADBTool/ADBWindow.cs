@@ -17,12 +17,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using AC.AndroidUtils.ADB;
+using AC.AndroidUtils.GUI.Properties;
+using AC.AndroidUtils.Shared;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using AC.AndroidUtils.ADB;
-using System.Diagnostics;
-using AC.AndroidUtils.Shared;
-using AC.AndroidUtils.GUI.Properties;
 
 namespace AC.AndroidUtils.GUI
 {
@@ -47,7 +46,7 @@ namespace AC.AndroidUtils.GUI
 
         private void ADBWindow_Load(object sender, System.EventArgs e)
         {
-            if(Settings.Default.adbPath != "" & ADBInstaller.CheckADB(Settings.Default.adbPath))
+            if (Settings.Default.adbPath != "" & ADBInstaller.CheckADB(Settings.Default.adbPath))
             {
                 LoadADB();
                 adbPath.Text = Settings.Default.adbPath;
@@ -87,23 +86,50 @@ namespace AC.AndroidUtils.GUI
 
         private void ConnectNet_Click(object sender, System.EventArgs e)
         {
+            if (IsEmpty(netADB_ip.Text) || IsEmpty(netADB_port.Text))
+            {
+                MessageBox.Show("Please fill in all blanks.", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             adbi.ConnectToRemoteDevice(netADB_ip.Text, uint.Parse(netADB_port.Text));
             LoadDevices();
         }
 
         private void DisconnectNet_Click(object sender, System.EventArgs e)
         {
+            if (IsEmpty(netADB_ip.Text) || IsEmpty(netADB_port.Text))
+            {
+                WarningDialog("Please fill in all blanks.", "Hint");
+                return;
+            }
+
             adbi.DisconnectRemoteDevice(netADB_ip.Text, uint.Parse(netADB_port.Text));
             LoadDevices();
         }
 
+        private bool IsBoxSelected(ListBox lb) => lb.SelectedIndex != -1;
+
         private void Reboot_Click(object sender, System.EventArgs e)
         {
+            if (!IsBoxSelected(devList))
+            {
+                WarningDialog("Please select a device.", "Warning");
+                return;
+            }
             adbi.Reboot(devicesMap[devList.SelectedIndex]);
         }
 
+        private void WarningDialog(string mess, string title) => MessageBox.Show(mess, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
         private void Reboot_recovery_Click(object sender, System.EventArgs e)
         {
+            if (!IsBoxSelected(devList))
+            {
+                WarningDialog("Please select a device.", "Warning");
+                return;
+            }
+
             adbi.Reboot(devicesMap[devList.SelectedIndex]);
         }
 
@@ -118,6 +144,12 @@ namespace AC.AndroidUtils.GUI
 
         private void Install_Click(object sender, System.EventArgs e)
         {
+            if (!IsEmpty(adbPath.Text))
+            {
+                WarningDialog("Please select a directory.", "Hint");
+                return;
+            }
+
             ADBInstaller.InstallADBTo(adbPath.Text);
             MessageBox.Show("Install successfully.", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -152,12 +184,14 @@ namespace AC.AndroidUtils.GUI
 
             DialogResult dr = MessageBox.Show("ADB will be uninstalled, and this app can NOT be used!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
-            if(dr == DialogResult.Yes)
+            if (dr == DialogResult.Yes)
             {
                 ADBInstaller.UninstallADB(adbPath.Text);
                 SetButtonsAvaliableOrNot(false);
                 MessageBox.Show("Uninstall successfully.", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
+        private bool IsEmpty(string str) => str.Length == 0;
     }
 }

@@ -25,6 +25,9 @@ using System.Text;
 
 namespace AC.AndroidUtils.ADB
 {
+    /// <summary>
+    /// Represents an ADB instance.
+    /// </summary>
     public class ADBInstance
     {
         public ADBInstance(string adbPathL)
@@ -34,6 +37,9 @@ namespace AC.AndroidUtils.ADB
 
         private string adbPath;
 
+        /// <summary>
+        /// A property that represents the ADB path.
+        /// </summary>
         public string ADBPath
         {
             get => adbPath;
@@ -84,6 +90,12 @@ namespace AC.AndroidUtils.ADB
             InvokeADBCommand("disconnect " + address + ":" + port, true);
         }
 
+        /// <summary>
+        /// Core method to invoke ADB with specified args, and return the Process object.
+        /// </summary>
+        /// <param name="arg">The argument.</param>
+        /// <param name="waitToFinish">The thread will wait for the process to finish if it is true.</param>
+        /// <returns>The Process object associated with the ADB.</returns>
         private Process InvokeADBCommand(string arg, bool waitToFinish)
         {
             ProcessStartInfo psi = new ProcessStartInfo();
@@ -111,6 +123,13 @@ namespace AC.AndroidUtils.ADB
             return p;
         }
 
+        /// <summary>
+        /// Core method to invoke ADB Command with a specified Android Device.
+        /// </summary>
+        /// <param name="device">The AndroidDevice object, to determine the device.</param>
+        /// <param name="args">The argument.</param>
+        /// <param name="waitToFinish">The thread will wait for the process to finish if it is true.</param>
+        /// <returns>The Process object associated with the ADB.</returns>
         private Process InvokeADBCommand(AndroidDevice device, string args, bool waitToFinish)
         {
             return InvokeADBCommand("-s \"" + device.Serial + "\" " + args, waitToFinish);
@@ -188,6 +207,16 @@ namespace AC.AndroidUtils.ADB
         public override int GetHashCode()
         {
             return ADBPath.GetHashCode();
+        }
+
+        public static bool operator ==(ADBInstance i1, ADBInstance i2)
+        {
+            return i1.Equals(i2);
+        }
+
+        public static bool operator !=(ADBInstance i1, ADBInstance i2)
+        {
+            return !(i1.Equals(i2));
         }
     }
 }
