@@ -217,5 +217,10 @@ namespace AC.AndroidUtils.GUI
 
             new ADBShell(devicesMap[devList.SelectedIndex], adbi).Show();
         }
+
+        private void InstallAPK_Click(object sender, System.EventArgs e)
+        {
+            new InstallApplication(devicesMap[devList.SelectedIndex]).ShowDialog();
+        }
     }
 }

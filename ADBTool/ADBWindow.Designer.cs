@@ -35,6 +35,7 @@
             this.netADB_port = new System.Windows.Forms.TextBox();
             this.netADB_ip = new System.Windows.Forms.TextBox();
             this.devices = new System.Windows.Forms.GroupBox();
+            this.devStatus = new System.Windows.Forms.Button();
             this.refresh = new System.Windows.Forms.Button();
             this.devList = new System.Windows.Forms.ListBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -48,7 +49,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.adbPath = new System.Windows.Forms.TextBox();
             this.load = new System.Windows.Forms.Button();
-            this.devStatus = new System.Windows.Forms.Button();
+            this.installAPK = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.devices.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -74,7 +75,7 @@
             this.connectNet.Location = new System.Drawing.Point(235, 80);
             this.connectNet.Name = "connectNet";
             this.connectNet.Size = new System.Drawing.Size(98, 35);
-            this.connectNet.TabIndex = 4;
+            this.connectNet.TabIndex = 2;
             this.connectNet.Text = "Connect";
             this.connectNet.UseVisualStyleBackColor = true;
             this.connectNet.Click += new System.EventHandler(this.ConnectNet_Click);
@@ -124,12 +125,22 @@
             this.devices.TabStop = false;
             this.devices.Text = "Connected Devices";
             // 
+            // devStatus
+            // 
+            this.devStatus.Location = new System.Drawing.Point(215, 253);
+            this.devStatus.Name = "devStatus";
+            this.devStatus.Size = new System.Drawing.Size(149, 38);
+            this.devStatus.TabIndex = 5;
+            this.devStatus.Text = "Device Status";
+            this.devStatus.UseVisualStyleBackColor = true;
+            this.devStatus.Click += new System.EventHandler(this.DevStatus_Click);
+            // 
             // refresh
             // 
             this.refresh.Location = new System.Drawing.Point(370, 253);
             this.refresh.Name = "refresh";
             this.refresh.Size = new System.Drawing.Size(99, 38);
-            this.refresh.TabIndex = 3;
+            this.refresh.TabIndex = 6;
             this.refresh.Text = "Refresh";
             this.refresh.UseVisualStyleBackColor = true;
             this.refresh.Click += new System.EventHandler(this.Refresh_Click);
@@ -141,10 +152,11 @@
             this.devList.Location = new System.Drawing.Point(21, 27);
             this.devList.Name = "devList";
             this.devList.Size = new System.Drawing.Size(448, 220);
-            this.devList.TabIndex = 3;
+            this.devList.TabIndex = 4;
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.installAPK);
             this.groupBox3.Controls.Add(this.shell);
             this.groupBox3.Controls.Add(this.reboot_recovery);
             this.groupBox3.Controls.Add(this.reboot);
@@ -160,7 +172,7 @@
             this.shell.Location = new System.Drawing.Point(12, 124);
             this.shell.Name = "shell";
             this.shell.Size = new System.Drawing.Size(197, 38);
-            this.shell.TabIndex = 2;
+            this.shell.TabIndex = 9;
             this.shell.Text = "Run shell command";
             this.shell.UseVisualStyleBackColor = true;
             this.shell.Click += new System.EventHandler(this.Shell_Click);
@@ -170,7 +182,7 @@
             this.reboot_recovery.Location = new System.Drawing.Point(12, 80);
             this.reboot_recovery.Name = "reboot_recovery";
             this.reboot_recovery.Size = new System.Drawing.Size(197, 38);
-            this.reboot_recovery.TabIndex = 1;
+            this.reboot_recovery.TabIndex = 8;
             this.reboot_recovery.Text = "Reboot to Recovery";
             this.reboot_recovery.UseVisualStyleBackColor = true;
             this.reboot_recovery.Click += new System.EventHandler(this.Reboot_recovery_Click);
@@ -180,7 +192,7 @@
             this.reboot.Location = new System.Drawing.Point(12, 35);
             this.reboot.Name = "reboot";
             this.reboot.Size = new System.Drawing.Size(197, 38);
-            this.reboot.TabIndex = 0;
+            this.reboot.TabIndex = 7;
             this.reboot.Text = "Reboot";
             this.reboot.UseVisualStyleBackColor = true;
             this.reboot.Click += new System.EventHandler(this.Reboot_Click);
@@ -205,7 +217,7 @@
             this.uninstall.Location = new System.Drawing.Point(317, 76);
             this.uninstall.Name = "uninstall";
             this.uninstall.Size = new System.Drawing.Size(121, 43);
-            this.uninstall.TabIndex = 5;
+            this.uninstall.TabIndex = 14;
             this.uninstall.Text = "Uninstall";
             this.uninstall.UseVisualStyleBackColor = true;
             this.uninstall.Click += new System.EventHandler(this.Uninstall_Click);
@@ -215,7 +227,7 @@
             this.install.Location = new System.Drawing.Point(166, 76);
             this.install.Name = "install";
             this.install.Size = new System.Drawing.Size(121, 43);
-            this.install.TabIndex = 4;
+            this.install.TabIndex = 13;
             this.install.Text = "Install";
             this.install.UseVisualStyleBackColor = true;
             this.install.Click += new System.EventHandler(this.Install_Click);
@@ -225,7 +237,7 @@
             this.browseADBPath.Location = new System.Drawing.Point(391, 26);
             this.browseADBPath.Name = "browseADBPath";
             this.browseADBPath.Size = new System.Drawing.Size(47, 30);
-            this.browseADBPath.TabIndex = 3;
+            this.browseADBPath.TabIndex = 11;
             this.browseADBPath.Text = "...";
             this.browseADBPath.UseVisualStyleBackColor = true;
             this.browseADBPath.Click += new System.EventHandler(this.BrowseADBPath_Click);
@@ -252,20 +264,20 @@
             this.load.Location = new System.Drawing.Point(12, 76);
             this.load.Name = "load";
             this.load.Size = new System.Drawing.Size(121, 43);
-            this.load.TabIndex = 0;
+            this.load.TabIndex = 12;
             this.load.Text = "Load";
             this.load.UseVisualStyleBackColor = true;
             this.load.Click += new System.EventHandler(this.Load_Click_1);
             // 
-            // devStatus
+            // installAPK
             // 
-            this.devStatus.Location = new System.Drawing.Point(215, 253);
-            this.devStatus.Name = "devStatus";
-            this.devStatus.Size = new System.Drawing.Size(149, 38);
-            this.devStatus.TabIndex = 4;
-            this.devStatus.Text = "Device Status";
-            this.devStatus.UseVisualStyleBackColor = true;
-            this.devStatus.Click += new System.EventHandler(this.DevStatus_Click);
+            this.installAPK.Location = new System.Drawing.Point(241, 35);
+            this.installAPK.Name = "installAPK";
+            this.installAPK.Size = new System.Drawing.Size(197, 38);
+            this.installAPK.TabIndex = 10;
+            this.installAPK.Text = "Install APK...";
+            this.installAPK.UseVisualStyleBackColor = true;
+            this.installAPK.Click += new System.EventHandler(this.InstallAPK_Click);
             // 
             // ADBWindow
             // 
@@ -316,6 +328,7 @@
         private System.Windows.Forms.Button uninstall;
         private System.Windows.Forms.Button install;
         private System.Windows.Forms.Button devStatus;
+        private System.Windows.Forms.Button installAPK;
     }
 }
 

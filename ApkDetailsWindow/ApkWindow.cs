@@ -39,20 +39,30 @@ namespace AC.AndroidUtils.GUI
             ApkPath = apkPath;
         }
 
+        public ApkWindow(AndroidApplication andApp)
+        {
+            ApkPath = andApp.ApkPath;
+            ApplicationObject = andApp;
+            InitializeComponent();
+        }
+
         private void HandleExit(object sender, FormClosedEventArgs e) => ExitApp();
 
         private void ExitApp() => Application.Exit();
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            try
+            if (ApplicationObject == null)
             {
-                ApplicationObject = AndroidAppParser.ReadApk(ApkPath);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Decompile error!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
+                try
+                {
+                    ApplicationObject = AndroidAppParser.ReadApk(ApkPath);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Decompile error!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Application.Exit();
+                }
             }
 
             apkPath.Text = ApplicationObject.ApkPath;
@@ -64,7 +74,7 @@ namespace AC.AndroidUtils.GUI
                 appLogo.Image = ApplicationObject.Logo;
             }
 
-            APKMain.sw.Hide();
+            if(APKMain.sw != null) APKMain.sw.Hide();
         }
 
         private void Close_Click(object sender, EventArgs e)

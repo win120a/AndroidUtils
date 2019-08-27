@@ -58,6 +58,12 @@
       <DependentUpon>ADBWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="ADBMain.cs" />
+    <Compile Include="InstallApplication.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InstallApplication.Designer.cs">
+      <DependentUpon>InstallApplication.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResponseWindow.cs">
       <SubType>Form</SubType>
@@ -71,6 +77,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ADBWindow.resx">
       <DependentUpon>ADBWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InstallApplication.resx">
+      <DependentUpon>InstallApplication.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -102,6 +111,14 @@
     <ProjectReference Include="..\ADBLibrary\ADBLibrary.csproj">
       <Project>{b66584a0-b28f-4cf5-99ad-d233a4e1fd02}</Project>
       <Name>ADBLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ApkDetailsWindow\ApkDetailsWindow.csproj">
+      <Project>{c734bf37-7eff-4229-b34a-61ffa2b8670a}</Project>
+      <Name>ApkDetailsWindow</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ApkUtil\ApkUtil.csproj">
+      <Project>{ad25c279-3a92-4c6c-8fb1-1a6921c37080}</Project>
+      <Name>ApkUtil</Name>
     </ProjectReference>
     <ProjectReference Include="..\SharedLibrary\SharedLibrary.csproj">
       <Project>{a47227a7-412c-4de8-8350-140e1b9d9567}</Project>

@@ -31,7 +31,7 @@ namespace AC.AndroidUtils.Shared
             Logo = new Bitmap(logoPath);
         }
 
-        public AndroidApplication(string apkPath)
+        internal AndroidApplication(string apkPath)
         {
             ApkPath = apkPath;
             PackageName = AppName = null;
