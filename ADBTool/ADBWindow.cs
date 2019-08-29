@@ -54,17 +54,20 @@ namespace AC.AndroidUtils.GUI
             else
             {
                 MessageBox.Show("Please load ADB in this window.", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                SetButtonsAvaliableOrNot(false);
+                SetButtonsAvailableOrNot(false);
             }
         }
 
-        private void SetButtonsAvaliableOrNot(bool avail)
+        private void SetButtonsAvailableOrNot(bool avail)
         {
             connectNet.Enabled = avail;
             disconnectNet.Enabled = avail;
             reboot.Enabled = avail;
             reboot_recovery.Enabled = avail;
             refresh.Enabled = avail;
+            devStatus.Enabled = avail;
+            installAPK.Enabled = avail;
+            shell.Enabled = avail;
         }
 
         private void LoadDevices()
@@ -114,25 +117,40 @@ namespace AC.AndroidUtils.GUI
         {
             if (!IsBoxSelected(devList))
             {
-                WarningDialog("Please select a device.", "Warning");
-                return;
+                WarningDialog("Please select a device.");
             }
-            adbi.Reboot(devicesMap[devList.SelectedIndex]);
+            else if (!IsDeviceStatusNormal(devicesMap[devList.SelectedIndex]))
+            {
+                WarningDialog("Device status isn't normal. Please refresh to check the newest status.");
+            }
+            else if (ConfirmDialog("Are you sure?")) 
+            {
+                adbi.Reboot(devicesMap[devList.SelectedIndex]);
+                LoadDevices();
+            }
         }
 
+        private bool IsDeviceStatusNormal(AndroidDevice dev) => !((dev.Status == DeviceStatus.Offline) || (dev.Status == DeviceStatus.Unauthorized));
+        private bool ConfirmDialog(string mess, string title) => (MessageBox.Show(mess, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question)) == DialogResult.Yes;
+        private bool ConfirmDialog(string mess) => ConfirmDialog(mess, "Confirm");
         private void WarningDialog(string mess, string title) => MessageBox.Show(mess, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        private void WarningDialog(string mess) => WarningDialog(mess, "Warning");
 
         private void Reboot_recovery_Click(object sender, System.EventArgs e)
         {
             if (!IsBoxSelected(devList))
             {
-                WarningDialog("Please select a device.", "Warning");
-                return;
+                WarningDialog("Please select a device.");
             }
-
-            adbi.RebootToRecovery(devicesMap[devList.SelectedIndex]);
-
-            LoadDevices();
+            else if (!IsDeviceStatusNormal(devicesMap[devList.SelectedIndex]))
+            {
+                WarningDialog("Device status isn't normal. Please refresh to check the newest status.");
+            }
+            else if (ConfirmDialog("Are you sure?"))
+            {
+                adbi.RebootToRecovery(devicesMap[devList.SelectedIndex]);
+                LoadDevices();
+            }
         }
 
         private void BrowseADBPath_Click(object sender, System.EventArgs e)
@@ -171,7 +189,7 @@ namespace AC.AndroidUtils.GUI
             LoadADB();
             LoadDevices();
 
-            SetButtonsAvaliableOrNot(true);
+            SetButtonsAvailableOrNot(true);
 
             MessageBox.Show("Load successfully.", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -189,7 +207,7 @@ namespace AC.AndroidUtils.GUI
             if (dr == DialogResult.Yes)
             {
                 ADBInstaller.UninstallADB(adbPath.Text);
-                SetButtonsAvaliableOrNot(false);
+                SetButtonsAvailableOrNot(false);
                 MessageBox.Show("Uninstall successfully.", "Hint", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -220,7 +238,25 @@ namespace AC.AndroidUtils.GUI
 
         private void InstallAPK_Click(object sender, System.EventArgs e)
         {
-            new InstallApplication(devicesMap[devList.SelectedIndex]).ShowDialog();
+            if (!IsBoxSelected(devList))
+            {
+                WarningDialog("Please select a device.", "Warning");
+                return;
+            }
+
+            new InstallApplication(devicesMap[devList.SelectedIndex], adbi).ShowDialog();
+        }
+
+        private void KillADB_Click(object sender, System.EventArgs e)
+        {
+            adbi.KillServer();
+            SetButtonsAvailableOrNot(false);
+        }
+
+        private void StartADB_Click(object sender, System.EventArgs e)
+        {
+            adbi.StartADBServer();
+            SetButtonsAvailableOrNot(true);
         }
     }
 }

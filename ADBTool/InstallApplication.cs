@@ -3,19 +3,21 @@ using AC.AndroidUtils.Shared;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Threading;
+using AC.AndroidUtils.ADB;
 
 namespace AC.AndroidUtils.GUI
 {
     public partial class InstallApplication : Form
     {
         private AndroidDevice device;
-
-        public InstallApplication(AndroidDevice device1)
+        private ADBInstance adbInstance;
+        public InstallApplication(AndroidDevice device1, ADBInstance adbi)
         {
             InitializeComponent();
             device = device1;
             apkDetails.Enabled = false;
+            install.Enabled = false;
+            adbInstance = adbi;
         }
 
         private void Add_Click(object sender, EventArgs e)
@@ -32,6 +34,8 @@ namespace AC.AndroidUtils.GUI
                     if (!apps.Items.Contains(s)) apps.Items.Add(s);
                 }
             }
+
+            install.Enabled = apps.Items.Count > 0;
         }
 
         private void Remove_Click(object sender, EventArgs e)
@@ -47,6 +51,8 @@ namespace AC.AndroidUtils.GUI
             {
                 apps.Items.Remove(i);
             }
+
+            install.Enabled = apps.Items.Count > 0;
         }
 
         private void ApkDetails_Click(object sender, EventArgs e)
@@ -57,7 +63,7 @@ namespace AC.AndroidUtils.GUI
 
             AndroidApplication app = AndroidAppParser.ReadApk(apkP);
 
-            new ApkWindow(app).Show();
+            new ApkWindow(app, false).Show();
         }
 
         private void Apps_SelectedIndexChanged(object sender, EventArgs e)
@@ -69,6 +75,14 @@ namespace AC.AndroidUtils.GUI
         {
             Hide();
             Dispose();
+        }
+
+        private void Install_Click(object sender, EventArgs e)
+        {
+            foreach(string app in apps.Items)
+            {
+                adbInstance.InstallApp(device, app);
+            }
         }
     }
 }

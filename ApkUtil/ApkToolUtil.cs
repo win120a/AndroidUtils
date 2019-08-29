@@ -58,7 +58,7 @@ namespace AC.AndroidUtils.ApkUtil
 
             Process p = new Process();
             p.StartInfo = psi;
-            string m = psi.FileName + " " + psi.Arguments;
+
             p.Start();
 
             p.WaitForExit();

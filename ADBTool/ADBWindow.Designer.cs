@@ -39,6 +39,7 @@
             this.refresh = new System.Windows.Forms.Button();
             this.devList = new System.Windows.Forms.ListBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.installAPK = new System.Windows.Forms.Button();
             this.shell = new System.Windows.Forms.Button();
             this.reboot_recovery = new System.Windows.Forms.Button();
             this.reboot = new System.Windows.Forms.Button();
@@ -49,7 +50,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.adbPath = new System.Windows.Forms.TextBox();
             this.load = new System.Windows.Forms.Button();
-            this.installAPK = new System.Windows.Forms.Button();
+            this.killADB = new System.Windows.Forms.Button();
+            this.startADB = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.devices.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -167,6 +169,16 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Device Operations";
             // 
+            // installAPK
+            // 
+            this.installAPK.Location = new System.Drawing.Point(241, 35);
+            this.installAPK.Name = "installAPK";
+            this.installAPK.Size = new System.Drawing.Size(197, 38);
+            this.installAPK.TabIndex = 10;
+            this.installAPK.Text = "Install APK...";
+            this.installAPK.UseVisualStyleBackColor = true;
+            this.installAPK.Click += new System.EventHandler(this.InstallAPK_Click);
+            // 
             // shell
             // 
             this.shell.Location = new System.Drawing.Point(12, 124);
@@ -199,6 +211,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.startADB);
+            this.groupBox2.Controls.Add(this.killADB);
             this.groupBox2.Controls.Add(this.uninstall);
             this.groupBox2.Controls.Add(this.install);
             this.groupBox2.Controls.Add(this.browseADBPath);
@@ -207,7 +221,7 @@
             this.groupBox2.Controls.Add(this.load);
             this.groupBox2.Location = new System.Drawing.Point(531, 221);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(444, 150);
+            this.groupBox2.Size = new System.Drawing.Size(444, 203);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "ADB Operations";
@@ -269,15 +283,25 @@
             this.load.UseVisualStyleBackColor = true;
             this.load.Click += new System.EventHandler(this.Load_Click_1);
             // 
-            // installAPK
+            // killADB
             // 
-            this.installAPK.Location = new System.Drawing.Point(241, 35);
-            this.installAPK.Name = "installAPK";
-            this.installAPK.Size = new System.Drawing.Size(197, 38);
-            this.installAPK.TabIndex = 10;
-            this.installAPK.Text = "Install APK...";
-            this.installAPK.UseVisualStyleBackColor = true;
-            this.installAPK.Click += new System.EventHandler(this.InstallAPK_Click);
+            this.killADB.Location = new System.Drawing.Point(12, 139);
+            this.killADB.Name = "killADB";
+            this.killADB.Size = new System.Drawing.Size(197, 43);
+            this.killADB.TabIndex = 15;
+            this.killADB.Text = "Kill ADB Server";
+            this.killADB.UseVisualStyleBackColor = true;
+            this.killADB.Click += new System.EventHandler(this.KillADB_Click);
+            // 
+            // startADB
+            // 
+            this.startADB.Location = new System.Drawing.Point(241, 139);
+            this.startADB.Name = "startADB";
+            this.startADB.Size = new System.Drawing.Size(197, 43);
+            this.startADB.TabIndex = 16;
+            this.startADB.Text = "Start ADB Server";
+            this.startADB.UseVisualStyleBackColor = true;
+            this.startADB.Click += new System.EventHandler(this.StartADB_Click);
             // 
             // ADBWindow
             // 
@@ -329,6 +353,8 @@
         private System.Windows.Forms.Button install;
         private System.Windows.Forms.Button devStatus;
         private System.Windows.Forms.Button installAPK;
+        private System.Windows.Forms.Button startADB;
+        private System.Windows.Forms.Button killADB;
     }
 }
 

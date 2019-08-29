@@ -65,6 +65,7 @@
             this.install.TabIndex = 2;
             this.install.Text = "&Install";
             this.install.UseVisualStyleBackColor = true;
+            this.install.Click += new System.EventHandler(this.Install_Click);
             // 
             // apps
             // 

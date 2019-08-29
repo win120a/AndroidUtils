@@ -26,6 +26,7 @@ namespace AC.AndroidUtils.GUI
 {
     public partial class ApkWindow : Form
     {
+        private bool isExitApp;
         public string ApkPath { get; private set; }
         public AndroidApplication ApplicationObject
         {
@@ -37,6 +38,11 @@ namespace AC.AndroidUtils.GUI
             InitializeComponent();
             FormClosed += HandleExit;
             ApkPath = apkPath;
+            isExitApp = true;
+        }
+        public ApkWindow(string apkPath, bool ExitApp) : this(apkPath)
+        {
+            isExitApp = ExitApp;
         }
 
         public ApkWindow(AndroidApplication andApp)
@@ -46,9 +52,25 @@ namespace AC.AndroidUtils.GUI
             InitializeComponent();
         }
 
+        public ApkWindow(AndroidApplication aa, bool exitApp) : this(aa)
+        {
+            isExitApp = exitApp;
+        }
+
         private void HandleExit(object sender, FormClosedEventArgs e) => ExitApp();
 
-        private void ExitApp() => Application.Exit();
+        private void ExitApp()
+        {
+            if (isExitApp)
+            {
+                Application.Exit();
+            }
+            else
+            {
+                Hide();
+                Dispose();
+            }
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -79,7 +101,7 @@ namespace AC.AndroidUtils.GUI
 
         private void Close_Click(object sender, EventArgs e)
         {
-            ExitApp();
+            HandleExit(null, null);
         }
     }
 }

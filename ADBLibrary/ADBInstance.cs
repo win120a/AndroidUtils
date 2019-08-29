@@ -211,9 +211,10 @@ namespace AC.AndroidUtils.ADB
             InvokeADBCommand(device, sBuilder.ToString(), true);
         }
 
-        public string RunCommand(AndroidDevice device, string command, bool runAsRoot)
+        public ShellResponse RunCommand(AndroidDevice device, string command, bool runAsRoot)
         {
             StringBuilder retS = new StringBuilder();
+            StringBuilder errS = new StringBuilder();
             string argH = runAsRoot ? "shell su -c " : "shell ";
             string arg = argH + command;
             Process adbP = InvokeADBCommand(device, arg, true);
@@ -226,7 +227,20 @@ namespace AC.AndroidUtils.ADB
                 }
             }
 
-            return retS.ToString();
+            using (StreamReader sr = adbP.StandardError)
+            {
+                while (!sr.EndOfStream)
+                {
+                    errS.AppendLine(sr.ReadLine());
+                }
+            }
+
+            ShellResponse shr = new ShellResponse();
+            shr.stdOut = retS.ToString();
+            shr.stdError = errS.ToString();
+
+
+            return shr;
         }
 
         /*
