@@ -123,7 +123,7 @@ namespace AC.AndroidUtils.GUI
             {
                 WarningDialog("Device status isn't normal. Please refresh to check the newest status.");
             }
-            else if (ConfirmDialog("Are you sure?")) 
+            else if (ConfirmDialog("Are you sure?"))
             {
                 adbi.Reboot(devicesMap[devList.SelectedIndex]);
                 LoadDevices();

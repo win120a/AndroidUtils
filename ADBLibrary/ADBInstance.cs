@@ -55,11 +55,19 @@ namespace AC.AndroidUtils.ADB
             }
         }
 
+        /// <summary>
+        /// Start the ADB Server (Daemon).
+        /// </summary>
         public void StartADBServer()
         {
             InvokeADBCommand("start-server", true);
         }
 
+        /// <summary>
+        /// Install an Android app.
+        /// </summary>
+        /// <param name="device">The Android device.</param>
+        /// <param name="apkPath">Path to the apk.</param>
         public void InstallApp(AndroidDevice device, string apkPath)
         {
             InvokeADBCommand(device, "install \"" + apkPath + "\"", true);
@@ -70,21 +78,39 @@ namespace AC.AndroidUtils.ADB
             InstallApp(device, aa.ApkPath);
         }
 
+        /// <summary>
+        /// Reboot the device.
+        /// </summary>
+        /// <param name="device">The device.</param>
         public void Reboot(AndroidDevice device)
         {
             InvokeADBCommand(device, "reboot", false);
         }
 
+        /// <summary>
+        /// Reboot the device and enter into the recovery.
+        /// </summary>
+        /// <param name="device">The device.</param>
         public void RebootToRecovery(AndroidDevice device)
         {
             InvokeADBCommand(device, "reboot recovery", false);
         }
 
+        /// <summary>
+        /// Connect to a remote device.
+        /// </summary>
+        /// <param name="address">The devices' address</param>
+        /// <param name="port">The port to the adbd.</param>
         public void ConnectToRemoteDevice(string address, uint port)
         {
             InvokeADBCommand("connect " + address + ":" + port, true);
         }
 
+        /// <summary>
+        /// Disconnect the remote device.
+        /// </summary>
+        /// <param name="address">The devices' address</param>
+        /// <param name="port">The port to the adbd.</param>
         public void DisconnectRemoteDevice(string address, uint port)
         {
             InvokeADBCommand("disconnect " + address + ":" + port, true);
@@ -173,16 +199,28 @@ namespace AC.AndroidUtils.ADB
             return ad;
         }
 
+        /// <summary>
+        /// Kill the daemon of the adb.
+        /// </summary>
         public void KillServer()
         {
             InvokeADBCommand("kill-server", true);
         }
 
+        /// <summary>
+        /// Make the thread to wait for an device.
+        /// </summary>
         public void WaitForDevice()
         {
             InvokeADBCommand("wait-for-device", true);
         }
 
+        /// <summary>
+        /// Push a file to the Android device.
+        /// </summary>
+        /// <param name="device">The android device.</param>
+        /// <param name="localPath">The path to the file that will send. (Computer)</param>
+        /// <param name="remotePath">The path to the file that will receive. (Android device)</param>
         public void PushFile(AndroidDevice device, string localPath, string remotePath)
         {
             StringBuilder sBuilder = new StringBuilder();
@@ -197,7 +235,13 @@ namespace AC.AndroidUtils.ADB
             InvokeADBCommand(device, sBuilder.ToString(), true);
         }
 
-        public void PullFileFromDevice(AndroidDevice device, string localPath, string remotePath)
+        /// <summary>
+        /// Pull a file from the Android Device.
+        /// </summary>
+        /// <param name="device">The Android device.</param>
+        /// <param name="localPath">The path to the file that will receive. (Computer)</param>
+        /// <param name="remotePath">The path to the file that will send. (Android device)</param>
+        public void PullFileFromDevice(AndroidDevice device, string remotePath, string localPath)
         {
             StringBuilder sBuilder = new StringBuilder();
 
@@ -211,6 +255,13 @@ namespace AC.AndroidUtils.ADB
             InvokeADBCommand(device, sBuilder.ToString(), true);
         }
 
+        /// <summary>
+        /// Run a shell command on an Android device.
+        /// </summary>
+        /// <param name="device">The android device.</param>
+        /// <param name="command">The command.</param>
+        /// <param name="runAsRoot">The command will run as root if it is true.</param>
+        /// <returns>The shell response.</returns>
         public ShellResponse RunCommand(AndroidDevice device, string command, bool runAsRoot)
         {
             StringBuilder retS = new StringBuilder();
@@ -239,7 +290,6 @@ namespace AC.AndroidUtils.ADB
             shr.stdOut = retS.ToString();
             shr.stdError = errS.ToString();
 
-
             return shr;
         }
 
@@ -254,7 +304,7 @@ namespace AC.AndroidUtils.ADB
 
             if (ReferenceEquals(obj.GetType(), GetType()))
             {
-                ADBInstance other = (ADBInstance)obj;
+                ADBInstance other = (ADBInstance) obj;
 
                 return other.ADBPath.Equals(ADBPath);
             }

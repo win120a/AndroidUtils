@@ -84,6 +84,7 @@ namespace AC.AndroidUtils.GUI
                 {
                     MessageBox.Show("Decompile error!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Application.Exit();
+                    Environment.Exit(-1);
                 }
             }
 
