@@ -301,18 +301,44 @@ namespace AC.AndroidUtils.ADB
             return shr;
         }
 
-        public string ListPackages(AndroidDevice device)
+        public string ListPackages(AndroidDevice device) => ListPackagesBySpecifiedType(device, "");
+        public string ListThirdPartyPackages(AndroidDevice device) => ListPackagesBySpecifiedType(device, "-3");
+        public string ListDisabledPackages(AndroidDevice device) => ListPackagesBySpecifiedType(device, "-d");
+        public string ListSystemPackages(AndroidDevice device) => ListPackagesBySpecifiedType(device, "-s");
+
+        private string ListPackagesBySpecifiedType(AndroidDevice device, string additionalArgs)
         {
-            string randomNameText = IOUtil.GenerateRandomFileName("txt");
-            string randomPath = IOUtil.GetRandomDirectoryInTemp();
+            /*
+             * Due to the compability issues, it has to read standard output.
+             */
 
-            Directory.CreateDirectory(randomPath);
+            Process p = InvokeADBCommand(device, "shell pm list packages " + additionalArgs, true);
+            StringBuilder sBuilder = new StringBuilder();
 
-            RunCommand(device, "pm list packages > /sdcard/" + randomNameText, true);
+            using (StreamReader sr = p.StandardOutput)
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    sBuilder.AppendLine(line);
+                }
+            }
 
-            PullFileFromDevice(device, "/sdcard/" + randomNameText, randomPath);
+            sBuilder.Replace("\r\n\r\n", "\r\n");
+            sBuilder.Replace("package:", "");
+            string s = sBuilder.ToString();
+            return s;
+        }
 
-            return IOUtil.ReadFileToEnd(randomPath + "\\" + randomNameText).Replace("package:", "");
+        public void UninstallApp(AndroidDevice device, string pkgName)
+        {
+            RunCommand(device, "pm uninstall " + pkgName, false);
+        }
+
+        public string GetApkPathByPackageName(AndroidDevice device, string pkgName)
+        {
+            string res = RunCommand(device, "pm path " + pkgName, false).stdOut;
+            return res.Replace("package:", "").Replace("\r\n\r\n", "");
         }
 
         /*
