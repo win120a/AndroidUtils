@@ -159,6 +159,10 @@ namespace AC.AndroidUtils.ADB
             return InvokeADBCommand("-s \"" + device.Serial + "\" " + args, waitToFinish);
         }
 
+        /// <summary>
+        /// List devices that are attacted on ADB. This method intends to return the response only.
+        /// </summary>
+        /// <returns>The response of "adb devices"</returns>
         private string ListDevices()
         {
             StartADBServer();
@@ -183,6 +187,10 @@ namespace AC.AndroidUtils.ADB
             return b.ToString();
         }
 
+        /// <summary>
+        /// List devices that are attached on ADB. This method returns a list of AndroidDevice Objects.
+        /// </summary>
+        /// <returns>A list of AndroidDevice objects.</returns>
         public List<AndroidDevice> GetAndroidDeviceList()
         {
             string adbResponse = ListDevices();
@@ -291,6 +299,20 @@ namespace AC.AndroidUtils.ADB
             shr.stdError = errS.ToString();
 
             return shr;
+        }
+
+        public string ListPackages(AndroidDevice device)
+        {
+            string randomNameText = IOUtil.GenerateRandomFileName("txt");
+            string randomPath = IOUtil.GetRandomDirectoryInTemp();
+
+            Directory.CreateDirectory(randomPath);
+
+            RunCommand(device, "pm list packages > /sdcard/" + randomNameText, true);
+
+            PullFileFromDevice(device, "/sdcard/" + randomNameText, randomPath);
+
+            return IOUtil.ReadFileToEnd(randomPath + "\\" + randomNameText).Replace("package:", "");
         }
 
         /*

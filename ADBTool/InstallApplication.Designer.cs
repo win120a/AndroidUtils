@@ -69,6 +69,7 @@
             // 
             // apps
             // 
+            this.apps.AllowDrop = true;
             this.apps.FormattingEnabled = true;
             this.apps.ItemHeight = 18;
             this.apps.Location = new System.Drawing.Point(12, 31);
@@ -111,6 +112,7 @@
             // 
             // InstallApplication
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.close;

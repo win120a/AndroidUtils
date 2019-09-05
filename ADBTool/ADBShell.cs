@@ -35,7 +35,7 @@ namespace AC.AndroidUtils.GUI
                 strW.Flush();
                 strW.Close();
 
-                swB.Replace("\r\n", "\n");      // CRLF -> LF
+                swB.Replace(IOUtil.CRLF, IOUtil.LF);      // CRLF -> LF
 
                 sw.Write(swB.ToString());
             }

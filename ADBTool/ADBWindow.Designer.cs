@@ -44,14 +44,15 @@
             this.reboot_recovery = new System.Windows.Forms.Button();
             this.reboot = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.startADB = new System.Windows.Forms.Button();
+            this.killADB = new System.Windows.Forms.Button();
             this.uninstall = new System.Windows.Forms.Button();
             this.install = new System.Windows.Forms.Button();
             this.browseADBPath = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.adbPath = new System.Windows.Forms.TextBox();
             this.load = new System.Windows.Forms.Button();
-            this.killADB = new System.Windows.Forms.Button();
-            this.startADB = new System.Windows.Forms.Button();
+            this.test = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.devices.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -226,6 +227,26 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "ADB Operations";
             // 
+            // startADB
+            // 
+            this.startADB.Location = new System.Drawing.Point(241, 139);
+            this.startADB.Name = "startADB";
+            this.startADB.Size = new System.Drawing.Size(197, 43);
+            this.startADB.TabIndex = 16;
+            this.startADB.Text = "Start ADB Server";
+            this.startADB.UseVisualStyleBackColor = true;
+            this.startADB.Click += new System.EventHandler(this.StartADB_Click);
+            // 
+            // killADB
+            // 
+            this.killADB.Location = new System.Drawing.Point(12, 139);
+            this.killADB.Name = "killADB";
+            this.killADB.Size = new System.Drawing.Size(197, 43);
+            this.killADB.TabIndex = 15;
+            this.killADB.Text = "Kill ADB Server";
+            this.killADB.UseVisualStyleBackColor = true;
+            this.killADB.Click += new System.EventHandler(this.KillADB_Click);
+            // 
             // uninstall
             // 
             this.uninstall.Location = new System.Drawing.Point(317, 76);
@@ -283,31 +304,22 @@
             this.load.UseVisualStyleBackColor = true;
             this.load.Click += new System.EventHandler(this.Load_Click_1);
             // 
-            // killADB
+            // test
             // 
-            this.killADB.Location = new System.Drawing.Point(12, 139);
-            this.killADB.Name = "killADB";
-            this.killADB.Size = new System.Drawing.Size(197, 43);
-            this.killADB.TabIndex = 15;
-            this.killADB.Text = "Kill ADB Server";
-            this.killADB.UseVisualStyleBackColor = true;
-            this.killADB.Click += new System.EventHandler(this.KillADB_Click);
-            // 
-            // startADB
-            // 
-            this.startADB.Location = new System.Drawing.Point(241, 139);
-            this.startADB.Name = "startADB";
-            this.startADB.Size = new System.Drawing.Size(197, 43);
-            this.startADB.TabIndex = 16;
-            this.startADB.Text = "Start ADB Server";
-            this.startADB.UseVisualStyleBackColor = true;
-            this.startADB.Click += new System.EventHandler(this.StartADB_Click);
+            this.test.Location = new System.Drawing.Point(536, 438);
+            this.test.Name = "test";
+            this.test.Size = new System.Drawing.Size(203, 46);
+            this.test.TabIndex = 4;
+            this.test.Text = "Test Function";
+            this.test.UseVisualStyleBackColor = true;
+            this.test.Click += new System.EventHandler(this.Test_Click);
             // 
             // ADBWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(996, 520);
+            this.Controls.Add(this.test);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.devices);
@@ -355,6 +367,7 @@
         private System.Windows.Forms.Button installAPK;
         private System.Windows.Forms.Button startADB;
         private System.Windows.Forms.Button killADB;
+        private System.Windows.Forms.Button test;
     }
 }
 

@@ -18,6 +18,12 @@ namespace AC.AndroidUtils.GUI
             apkDetails.Enabled = false;
             install.Enabled = false;
             adbInstance = adbi;
+            apps.DragDrop += HandleDragAndDrop;
+        }
+
+        private void HandleDragAndDrop(object sender, DragEventArgs e)
+        {
+            MessageBox.Show(e.Data.ToString());
         }
 
         private void Add_Click(object sender, EventArgs e)

@@ -15,8 +15,13 @@ namespace AC.AndroidUtils.GUI
             err = respondE;
         }
 
+        /// <summary>
+        /// Create a Response window with a ShellResponse object.
+        /// </summary>
+        /// <param name="shr">The ShellResponse object.</param>
         public ResponseWindow(ShellResponse shr) : this(shr.stdOut, shr.stdError)
         {
+            // Do nothing else.
         }
 
         private void Close_Click(object sender, EventArgs e)
