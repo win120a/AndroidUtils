@@ -39,7 +39,6 @@
             this.refresh = new System.Windows.Forms.Button();
             this.devList = new System.Windows.Forms.ListBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.installAPK = new System.Windows.Forms.Button();
             this.shell = new System.Windows.Forms.Button();
             this.reboot_recovery = new System.Windows.Forms.Button();
             this.reboot = new System.Windows.Forms.Button();
@@ -53,6 +52,7 @@
             this.adbPath = new System.Windows.Forms.TextBox();
             this.load = new System.Windows.Forms.Button();
             this.test = new System.Windows.Forms.Button();
+            this.pkgMgmt = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.devices.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -159,7 +159,7 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.installAPK);
+            this.groupBox3.Controls.Add(this.pkgMgmt);
             this.groupBox3.Controls.Add(this.shell);
             this.groupBox3.Controls.Add(this.reboot_recovery);
             this.groupBox3.Controls.Add(this.reboot);
@@ -169,16 +169,6 @@
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Device Operations";
-            // 
-            // installAPK
-            // 
-            this.installAPK.Location = new System.Drawing.Point(241, 35);
-            this.installAPK.Name = "installAPK";
-            this.installAPK.Size = new System.Drawing.Size(197, 38);
-            this.installAPK.TabIndex = 10;
-            this.installAPK.Text = "Install APK...";
-            this.installAPK.UseVisualStyleBackColor = true;
-            this.installAPK.Click += new System.EventHandler(this.InstallAPK_Click);
             // 
             // shell
             // 
@@ -314,6 +304,16 @@
             this.test.UseVisualStyleBackColor = true;
             this.test.Click += new System.EventHandler(this.Test_Click);
             // 
+            // pkgMgmt
+            // 
+            this.pkgMgmt.Location = new System.Drawing.Point(241, 36);
+            this.pkgMgmt.Name = "pkgMgmt";
+            this.pkgMgmt.Size = new System.Drawing.Size(196, 37);
+            this.pkgMgmt.TabIndex = 11;
+            this.pkgMgmt.Text = "Package Managment";
+            this.pkgMgmt.UseVisualStyleBackColor = true;
+            this.pkgMgmt.Click += new System.EventHandler(this.PkgMgmt_Click);
+            // 
             // ADBWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
@@ -364,10 +364,10 @@
         private System.Windows.Forms.Button uninstall;
         private System.Windows.Forms.Button install;
         private System.Windows.Forms.Button devStatus;
-        private System.Windows.Forms.Button installAPK;
         private System.Windows.Forms.Button startADB;
         private System.Windows.Forms.Button killADB;
         private System.Windows.Forms.Button test;
+        private System.Windows.Forms.Button pkgMgmt;
     }
 }
 

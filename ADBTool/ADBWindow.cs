@@ -86,7 +86,7 @@ namespace AC.AndroidUtils.GUI
             reboot_recovery.Enabled = avail;
             refresh.Enabled = avail;
             devStatus.Enabled = avail;
-            installAPK.Enabled = avail;
+            pkgMgmt.Enabled = avail;
             shell.Enabled = avail;
         }
 
@@ -244,8 +244,6 @@ namespace AC.AndroidUtils.GUI
             new ADBShell(devicesMap[devList.SelectedIndex], adbi).Show();
         }
 
-        private void InstallAPK_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new InstallApplication(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
-
         private void KillADB_Click(object sender, System.EventArgs e)
         {
             adbi.KillServer();
@@ -260,5 +258,10 @@ namespace AC.AndroidUtils.GUI
 
         private void Test_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new PackageManagment(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
         #endregion
+
+        private void PkgMgmt_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new PackageManagment(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
+
+        //private void InstallAPK_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new InstallApplication(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
+
     }
 }

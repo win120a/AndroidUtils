@@ -17,18 +17,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using AC.AndroidUtils.ADB;
+using AC.AndroidUtils.Shared;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AC.AndroidUtils.ADB;
-using System.Windows.Forms;
-using AC.AndroidUtils.Shared;
 using System.IO;
+using System.Text;
+using System.Windows.Forms;
 
 namespace AC.AndroidUtils.GUI
 {
@@ -43,6 +38,8 @@ namespace AC.AndroidUtils.GUI
         private const int SYSTEM_APPS = 2;
         private const int DISABLED_APPS = 3;
         private const int ALL_APPS = 4;
+
+        private delegate void Callback(string pkgName);
 
         public PackageManagment(AndroidDevice device1, ADBInstance instance)
         {
@@ -121,24 +118,45 @@ namespace AC.AndroidUtils.GUI
             LoadPackages();
         }
 
-        private void Uninstall_Click(object sender, EventArgs e)
+        private void Uninstall_Click(object sender, EventArgs e) => RunActsWithConfirm((pkgN) => adbi.UninstallApp(device, pkgN));
+
+        private void RunActs(Callback callback, bool needsConfirm)
         {
-            string pkgN = pkgMap[packagesListbox.SelectedIndex];
-            if(ConfirmDialog("Are you sure?\nPackage Name: " + pkgN))
+            StringBuilder messageBuilder = new StringBuilder();
+            messageBuilder.Append("Are you sure? \nPackage Name: \n");
+            List<string> pkgL = new List<string>();
+
+            foreach (int i in packagesListbox.SelectedIndices)
             {
-                adbi.UninstallApp(device, pkgN);
+                pkgL.Add(pkgMap[i]);
+                messageBuilder.AppendLine(pkgMap[i]);
             }
+
+            if (!needsConfirm || ConfirmDialog(messageBuilder.ToString()))
+            {
+                foreach (string pkgN in pkgL)
+                {
+                    callback.Invoke(pkgN);
+                }
+            }
+
             LoadPackages();
         }
 
-        private bool ConfirmDialog(string mess)
-        {
-            return MessageBox.Show(mess, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
-        }
+        private void RunActsWithConfirm(Callback callback) => RunActs(callback, true);
+
+        private bool ConfirmDialog(string mess) => MessageBox.Show(mess, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
 
         private void Export_Click(object sender, EventArgs e)
         {
             MessageBox.Show(adbi.GetApkPathByPackageName(device, pkgMap[packagesListbox.SelectedIndex]));
         }
+
+        private void InstallApk_Click(object sender, EventArgs e)
+        {
+            new InstallApplication(device, adbi).ShowDialog();
+        }
+
+        private void Hide_Click(object sender, EventArgs e) => RunActsWithConfirm((pkgN) => adbi.RunCommand(device, "pm hide " + pkgN, false));
     }
 }
