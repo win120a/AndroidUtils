@@ -27,7 +27,7 @@ using System.Text;
 namespace AC.AndroidUtils.ADB
 {
     /// <summary>
-    /// Represents an ADB instance.
+    /// Represents an ADB instance, and provides wrapper methods to operate device.
     /// </summary>
     public class ADBInstance
     {
@@ -55,67 +55,6 @@ namespace AC.AndroidUtils.ADB
 
                 adbPath = value;
             }
-        }
-
-        /// <summary>
-        /// Start the ADB Server (Daemon).
-        /// </summary>
-        public void StartADBServer()
-        {
-            InvokeADBCommand("start-server", true);
-        }
-
-        /// <summary>
-        /// Install an Android app.
-        /// </summary>
-        /// <param name="device">The Android device.</param>
-        /// <param name="apkPath">Path to the apk.</param>
-        public void InstallApp(AndroidDevice device, string apkPath)
-        {
-            InvokeADBCommand(device, "install \"" + apkPath + "\"", true);
-        }
-
-        public void InstallApp(AndroidDevice device, AndroidApplication aa)
-        {
-            InstallApp(device, aa.ApkPath);
-        }
-
-        /// <summary>
-        /// Reboot the device.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        public void Reboot(AndroidDevice device)
-        {
-            InvokeADBCommand(device, "reboot", false);
-        }
-
-        /// <summary>
-        /// Reboot the device and enter into the recovery.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        public void RebootToRecovery(AndroidDevice device)
-        {
-            InvokeADBCommand(device, "reboot recovery", false);
-        }
-
-        /// <summary>
-        /// Connect to a remote device.
-        /// </summary>
-        /// <param name="address">The devices' address</param>
-        /// <param name="port">The port to the adbd.</param>
-        public void ConnectToRemoteDevice(string address, uint port)
-        {
-            InvokeADBCommand("connect " + address + ":" + port, true);
-        }
-
-        /// <summary>
-        /// Disconnect the remote device.
-        /// </summary>
-        /// <param name="address">The devices' address</param>
-        /// <param name="port">The port to the adbd.</param>
-        public void DisconnectRemoteDevice(string address, uint port)
-        {
-            InvokeADBCommand("disconnect " + address + ":" + port, true);
         }
 
         /// <summary>
@@ -160,6 +99,69 @@ namespace AC.AndroidUtils.ADB
         {
             return InvokeADBCommand("-s \"" + device.Serial + "\" " + args, waitToFinish);
         }
+
+        /// <summary>
+        /// Start the ADB Server (Daemon).
+        /// </summary>
+        public void StartADBServer() => InvokeADBCommand("start-server", true);
+
+        /// <summary>
+        /// Kill the daemon of the adb.
+        /// </summary>
+        public void KillServer() => InvokeADBCommand("kill-server", true);
+
+
+        /// <summary>
+        /// Make the thread to wait for an device.
+        /// </summary>
+        public void WaitForDevice() => InvokeADBCommand("wait-for-device", true);
+
+        /// <summary>
+        /// Install an Android app.
+        /// </summary>
+        /// <param name="device">The Android device.</param>
+        /// <param name="apkPath">Path to the apk.</param>
+        public void InstallApp(AndroidDevice device, string apkPath) => InvokeADBCommand(device, "install \"" + apkPath + "\"", true);
+
+        /// <summary>
+        /// Install an Android app. with an AndroidApplication Object.
+        /// </summary>
+        /// <param name="device">The Android device object.</param>
+        /// <param name="aa">The Android Application object.</param>
+        public void InstallApp(AndroidDevice device, AndroidApplication aa) => InstallApp(device, aa.ApkPath);
+
+        /// <summary>
+        /// Uninstall the Android app.
+        /// </summary>
+        /// <param name="device">The Android device object.</param>
+        /// <param name="pkgName">The package name.</param>
+        public void UninstallApp(AndroidDevice device, string pkgName) => RunCommand(device, "pm uninstall " + pkgName, false);
+
+        /// <summary>
+        /// Reboot the device.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        public void Reboot(AndroidDevice device) => InvokeADBCommand(device, "reboot", false);
+
+        /// <summary>
+        /// Reboot the device and enter into the recovery.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        public void RebootToRecovery(AndroidDevice device) => InvokeADBCommand(device, "reboot recovery", false);
+
+        /// <summary>
+        /// Connect to a remote device.
+        /// </summary>
+        /// <param name="address">The devices' address</param>
+        /// <param name="port">The port to the adbd.</param>
+        public void ConnectToRemoteDevice(string address, uint port) => InvokeADBCommand("connect " + address + ":" + port, true);
+
+        /// <summary>
+        /// Disconnect the remote device.
+        /// </summary>
+        /// <param name="address">The devices' address</param>
+        /// <param name="port">The port to the adbd.</param>
+        public void DisconnectRemoteDevice(string address, uint port) => InvokeADBCommand("disconnect " + address + ":" + port, true);
 
         /// <summary>
         /// List devices that are attacted on ADB. This method intends to return the response only.
@@ -207,22 +209,6 @@ namespace AC.AndroidUtils.ADB
             }
 
             return ad;
-        }
-
-        /// <summary>
-        /// Kill the daemon of the adb.
-        /// </summary>
-        public void KillServer()
-        {
-            InvokeADBCommand("kill-server", true);
-        }
-
-        /// <summary>
-        /// Make the thread to wait for an device.
-        /// </summary>
-        public void WaitForDevice()
-        {
-            InvokeADBCommand("wait-for-device", true);
         }
 
         /// <summary>
@@ -332,11 +318,6 @@ namespace AC.AndroidUtils.ADB
             return s;
         }
 
-        public void UninstallApp(AndroidDevice device, string pkgName)
-        {
-            RunCommand(device, "pm uninstall " + pkgName, false);
-        }
-
         public ShellResponse RunMultiLineCommand(AndroidDevice device, string multiLineCommand, bool runAsRoot)
         {
             string randomName = IOUtil.GenerateRandomFileName("sh");
@@ -391,22 +372,12 @@ namespace AC.AndroidUtils.ADB
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return ADBPath.GetHashCode();
-        }
+        public override int GetHashCode() => ADBPath.GetHashCode();
 
         /*
          * Definition of C# Operator.
          */
-        public static bool operator ==(ADBInstance i1, ADBInstance i2)
-        {
-            return i1.Equals(i2);
-        }
-
-        public static bool operator !=(ADBInstance i1, ADBInstance i2)
-        {
-            return !(i1.Equals(i2));
-        }
+        public static bool operator == (ADBInstance i1, ADBInstance i2) => i1.Equals(i2);
+        public static bool operator != (ADBInstance i1, ADBInstance i2) => !(i1.Equals(i2));
     }
 }

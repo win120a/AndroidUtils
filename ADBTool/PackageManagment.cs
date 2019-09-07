@@ -32,8 +32,8 @@ namespace AC.AndroidUtils.GUI
     {
         private ADBInstance adbi;
         private AndroidDevice device;
-        private Dictionary<int, string> pkgMap;
-        private Dictionary<int, string> initialMap;
+        private Dictionary<int, string> pkgMap;    // <index, package name>
+        private Dictionary<int, string> initialMap;   // A cache to save the original "package map".
         private int type;
 
         private const int THIRDPARTY_APPS = 1;
@@ -60,6 +60,8 @@ namespace AC.AndroidUtils.GUI
             s.Height = 540;
 
             Size = s;
+
+            kw.KeyPress += HandleEnter;
         }
 
         private void PackagesManagment_Load(object sender, EventArgs e)
@@ -174,13 +176,21 @@ namespace AC.AndroidUtils.GUI
 
         private void Export_Click(object sender, EventArgs e)
         {
+            RunActs((pkgN) => DoExport(pkgN), false);
+            MessageBox.Show("Export successfully.", "Hint");
+        }
+
+        private void DoExport(string pkgN)
+        {
+            Text = "Exporting package " + pkgN + "....";
             StringBuilder cmdBuilder = new StringBuilder();
-            string path = adbi.GetApkPathByPackageName(device, pkgMap[packagesListbox.SelectedIndex]);
+            string path = adbi.GetApkPathByPackageName(device, pkgN);
             string randomAPKName = IOUtil.GenerateRandomFileName("apk");
             string randomTempD = IOUtil.GetRandomDirectoryInTemp();
 
             Directory.CreateDirectory(randomTempD);
 
+            // Copy out the selected apk file to the sdcard. //
             cmdBuilder.Append("cp ").Append(path).Append(" /sdcard/").Append(randomAPKName);
             adbi.RunCommand(device, cmdBuilder.ToString(), false);
 
@@ -192,7 +202,7 @@ namespace AC.AndroidUtils.GUI
 
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Android Package|*.apk";
-            sfd.Title = "Save the exported package to: ";
+            sfd.Title = "Save the exported package (" + pkgN + ") to: ";
 
             DialogResult dr = sfd.ShowDialog();
 
@@ -208,16 +218,9 @@ namespace AC.AndroidUtils.GUI
             Directory.Delete(randomTempD, true);
 
             adbi.RunCommand(device, "rm /sdcard/" + randomAPKName, false);
-
-            MessageBox.Show("Export successfully.", "Hint");
         }
 
-        private void InstallApk_Click(object sender, EventArgs e)
-        {
-            new InstallApplication(device, adbi).ShowDialog();
-        }
-
-        private void Hide_Click(object sender, EventArgs e) => RunActsWithConfirm((pkgN) => adbi.RunCommand(device, "pm hide " + pkgN, false));
+        private void InstallApk_Click(object sender, EventArgs e) => new InstallApplication(device, adbi).ShowDialog();
 
         private void ClearData_Click(object sender, EventArgs e) => RunActs((pkgN) => adbi.RunCommand(device, "pm clear " + pkgN, false), true);
 
@@ -243,10 +246,10 @@ namespace AC.AndroidUtils.GUI
                 packagesListbox.Items.Remove(kvp2.Value);
             }
 
-            RefillMap();
+            RefillPkgMap();
         }
 
-        private void RefillMap()
+        private void RefillPkgMap()
         {
             pkgMap.Clear();
 
@@ -278,7 +281,58 @@ namespace AC.AndroidUtils.GUI
 
         private void X_Click(object sender, EventArgs e)
         {
+            kw.Text = "";
             ReloadInitialMap();
+        }
+
+        private void CpPkgName_Click(object sender, EventArgs e)
+        {
+            if (packagesListbox.SelectedIndices.Count == 0)
+            {
+                AlertDialog("Please select at least one package.");
+            }
+            else if(packagesListbox.SelectedIndices.Count > 1)
+            {
+                AlertDialog("Only one package can be selected.");
+            }
+            else
+            {
+                Clipboard.SetText(pkgMap[packagesListbox.SelectedIndex]);
+            }
+        }
+
+        private void HandleEnter(object sender, KeyPressEventArgs kpea)
+        {
+            if (kpea.KeyChar == 13)     // [Enter] key.
+            {
+                search.PerformClick();
+                kpea.Handled = true;       // Terminate the spreading of the event.
+            }
+        }
+
+        private void Disable_Click(object sender, EventArgs e)
+        {
+            if(ConfirmDialog("This action requires ROOT PERMISSIONS, please make sure that your device is rooted.\n\nIs your device rooted?"))
+                RunActs((pkgN) => adbi.RunCommand(device, "pm disable " + pkgN, true), true);
+        }
+
+        private void Enable_Click(object sender, EventArgs e)
+        {
+            if(ConfirmDialog("This action requires ROOT PERMISSIONS, please make sure that your device is rooted.\n\nIs your device rooted?"))
+                RunActs((pkgN) => adbi.RunCommand(device, "pm enable " + pkgN, true), false);
+        }
+
+        private void Start_Click(object sender, EventArgs e)
+        {
+            if(packagesListbox.SelectedIndices.Count != 1)
+            {
+                AlertDialog("Only one package can be selected.");
+            }
+            else
+            {
+                AlertDialog("This action may not work due to the limitation of the app.");
+                adbi.RunCommand(device, "am start " + pkgMap[packagesListbox.SelectedIndex], false);
+            }
         }
     }
 }
