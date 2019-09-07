@@ -17,11 +17,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using AC.AndroidUtils.Shared;
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
-using AC.AndroidUtils.Shared;
 
 namespace AC.AndroidUtils.ApkUtil
 {
@@ -47,7 +45,7 @@ namespace AC.AndroidUtils.ApkUtil
             psi.FileName = "javaw";
 #endif
             psi.Arguments = "-jar \"" + systemTemp + "\\apkt.jar\"";
-            psi.Arguments += withSmali ? (" " + "d -o " + "\"" + output + "\" ") : 
+            psi.Arguments += withSmali ? (" " + "d -o " + "\"" + output + "\" ") :
                                 (" " + "d -s -o " + "\"" + output + "\" ");
 
             psi.Arguments += forceOverride ? "-f" : "";

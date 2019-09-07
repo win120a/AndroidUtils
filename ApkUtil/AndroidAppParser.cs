@@ -168,7 +168,7 @@ namespace AC.AndroidUtils.ApkUtil
 
         public static AndroidApplication ReadApk(string apkPath)
         {
-            string outPath = Environment.GetEnvironmentVariable("Temp") + "\\apk";
+            string outPath = IOUtil.GetRandomDirectoryInTemp();
 
             ApkToolUtil.DecompileApk(apkPath, outPath, false, true);
 
