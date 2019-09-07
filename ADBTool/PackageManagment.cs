@@ -21,6 +21,7 @@ using AC.AndroidUtils.ADB;
 using AC.AndroidUtils.Shared;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -32,6 +33,7 @@ namespace AC.AndroidUtils.GUI
         private ADBInstance adbi;
         private AndroidDevice device;
         private Dictionary<int, string> pkgMap;
+        private Dictionary<int, string> initialMap;
         private int type;
 
         private const int THIRDPARTY_APPS = 1;
@@ -39,7 +41,10 @@ namespace AC.AndroidUtils.GUI
         private const int DISABLED_APPS = 3;
         private const int ALL_APPS = 4;
 
+        // 621x540
+
         private delegate void Callback(string pkgName);
+        private delegate bool Predicate(string pkgName);
 
         public PackageManagment(AndroidDevice device1, ADBInstance instance)
         {
@@ -47,7 +52,14 @@ namespace AC.AndroidUtils.GUI
             adbi = instance;
             device = device1;
             pkgMap = new Dictionary<int, string>();
+            initialMap = new Dictionary<int, string>();
             type = ALL_APPS;
+
+            Size s = new Size();
+            s.Width = 621;
+            s.Height = 540;
+
+            Size = s;
         }
 
         private void PackagesManagment_Load(object sender, EventArgs e)
@@ -59,8 +71,11 @@ namespace AC.AndroidUtils.GUI
 
         private void LoadPackagesBySpecifiedType(int type)
         {
+            Text = "Loading...";
             packagesListbox.Items.Clear();
             pkgMap.Clear();
+            initialMap.Clear();
+            kw.Text = "";
 
             string response;
             switch (type)
@@ -89,9 +104,12 @@ namespace AC.AndroidUtils.GUI
                 {
                     packagesListbox.Items.Add(line);
                     pkgMap.Add(i, line);
+                    initialMap.Add(i, line);
                     i++;
                 }
             }
+
+            Text = "Package Managment";
         }
 
         private void ThirdParty_CheckedChanged(object sender, EventArgs e)
@@ -122,6 +140,12 @@ namespace AC.AndroidUtils.GUI
 
         private void RunActs(Callback callback, bool needsConfirm)
         {
+            if (packagesListbox.SelectedIndices.Count == 0)
+            {
+                AlertDialog("Please select at least one package.");
+                return;
+            }
+
             StringBuilder messageBuilder = new StringBuilder();
             messageBuilder.Append("Are you sure? \nPackage Name: \n");
             List<string> pkgL = new List<string>();
@@ -138,18 +162,54 @@ namespace AC.AndroidUtils.GUI
                 {
                     callback.Invoke(pkgN);
                 }
-            }
 
-            LoadPackages();
+                LoadPackages();
+            }
         }
 
         private void RunActsWithConfirm(Callback callback) => RunActs(callback, true);
 
         private bool ConfirmDialog(string mess) => MessageBox.Show(mess, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+        private void AlertDialog(string mess) => MessageBox.Show(mess, "Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
         private void Export_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(adbi.GetApkPathByPackageName(device, pkgMap[packagesListbox.SelectedIndex]));
+            StringBuilder cmdBuilder = new StringBuilder();
+            string path = adbi.GetApkPathByPackageName(device, pkgMap[packagesListbox.SelectedIndex]);
+            string randomAPKName = IOUtil.GenerateRandomFileName("apk");
+            string randomTempD = IOUtil.GetRandomDirectoryInTemp();
+
+            Directory.CreateDirectory(randomTempD);
+
+            cmdBuilder.Append("cp ").Append(path).Append(" /sdcard/").Append(randomAPKName);
+            adbi.RunCommand(device, cmdBuilder.ToString(), false);
+
+            string tempAPKPath = randomTempD + "\\" + randomAPKName;
+
+            adbi.PullFileFromDevice(device, "/sdcard/" + randomAPKName, tempAPKPath);
+
+            //MessageBox.Show(tempAPKPath);
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Android Package|*.apk";
+            sfd.Title = "Save the exported package to: ";
+
+            DialogResult dr = sfd.ShowDialog();
+
+            //MessageBox.Show(dr == DialogResult.OK ? sfd.FileName : "User abort");
+            if (dr != DialogResult.OK) return;
+
+            if (File.Exists(sfd.FileName)) File.Delete(sfd.FileName);     // Delete the file if user wants to override.
+
+            File.Copy(tempAPKPath, sfd.FileName);
+
+            File.Delete(tempAPKPath);
+
+            Directory.Delete(randomTempD, true);
+
+            adbi.RunCommand(device, "rm /sdcard/" + randomAPKName, false);
+
+            MessageBox.Show("Export successfully.", "Hint");
         }
 
         private void InstallApk_Click(object sender, EventArgs e)
@@ -158,5 +218,67 @@ namespace AC.AndroidUtils.GUI
         }
 
         private void Hide_Click(object sender, EventArgs e) => RunActsWithConfirm((pkgN) => adbi.RunCommand(device, "pm hide " + pkgN, false));
+
+        private void ClearData_Click(object sender, EventArgs e) => RunActs((pkgN) => adbi.RunCommand(device, "pm clear " + pkgN, false), true);
+
+        private void Refresh_Click(object sender, EventArgs e) => LoadPackages();
+
+        private void RemoveIf(Predicate p)
+        {
+            IEnumerator<KeyValuePair<int, string>> enumeratorM = pkgMap.GetEnumerator();
+            Dictionary<int, string> removeMap = new Dictionary<int, string>();
+
+            while (enumeratorM.MoveNext())
+            {
+                KeyValuePair<int, string> kvp = enumeratorM.Current;
+                if (p.Invoke(kvp.Value))
+                {
+                    removeMap.Add(kvp.Key, kvp.Value);
+                }
+            }
+
+            foreach (KeyValuePair<int, string> kvp2 in removeMap)
+            {
+                pkgMap.Remove(kvp2.Key);
+                packagesListbox.Items.Remove(kvp2.Value);
+            }
+
+            RefillMap();
+        }
+
+        private void RefillMap()
+        {
+            pkgMap.Clear();
+
+            int i = 0;
+            foreach (string s in packagesListbox.Items)
+            {
+                pkgMap.Add(i, s);
+                i++;
+            }
+        }
+
+        private void Search_Click(object sender, EventArgs e)
+        {
+            ReloadInitialMap();
+            RemoveIf((pkgN) => (!(pkgN.Contains(kw.Text))));
+        }
+
+        private void ReloadInitialMap()
+        {
+            pkgMap.Clear();
+            packagesListbox.Items.Clear();
+
+            foreach (KeyValuePair<int, string> kvp in initialMap)
+            {
+                packagesListbox.Items.Add(kvp.Value);
+                pkgMap.Add(kvp.Key, kvp.Value);
+            }
+        }
+
+        private void X_Click(object sender, EventArgs e)
+        {
+            ReloadInitialMap();
+        }
     }
 }

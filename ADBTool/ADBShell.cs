@@ -9,7 +9,7 @@ namespace AC.AndroidUtils.GUI
 {
     public partial class ADBShell : Form
     {
-        private const string shText = "#! /system/bin/sh";
+        // private const string shText = "#! /system/bin/sh";
         private AndroidDevice device;
         private ADBInstance adbi;
 
@@ -22,29 +22,7 @@ namespace AC.AndroidUtils.GUI
 
         private void Execute_Click(object sender, EventArgs e)
         {
-            string randomName = IOUtil.GenerateRandomFileName("sh");
-            string fileName = Environment.GetEnvironmentVariable("Temp") + randomName;
-
-            StringBuilder swB = new StringBuilder();
-            StringWriter strW = new StringWriter(swB);
-            using (StreamWriter sw = new StreamWriter(new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite)))
-            {
-                strW.WriteLine(shText);
-                strW.WriteLine(shellText.Text.Replace("\r\n", "\n"));
-
-                strW.Flush();
-                strW.Close();
-
-                swB.Replace(IOUtil.CRLF, IOUtil.LF);      // CRLF -> LF
-
-                sw.Write(swB.ToString());
-            }
-
-            adbi.PushFile(device, fileName, "/sdcard/" + randomName);
-
-            new ResponseWindow(adbi.RunCommand(device, "sh /sdcard/" + randomName, runasroot.Checked)).Show();
-
-            adbi.RunCommand(device, "rm /sdcard/" + randomName, false);
+            new ResponseWindow(adbi.RunMultiLineCommand(device, shellText.Text, runasroot.Checked)).Show();
         }
 
         private void Close_Click(object sender, EventArgs e)

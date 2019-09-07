@@ -18,6 +18,7 @@
 */
 
 using AC.AndroidUtils.Shared;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,6 +31,7 @@ namespace AC.AndroidUtils.ADB
     /// </summary>
     public class ADBInstance
     {
+        private const string SH_HEADER = "#! /system/bin/sh";
         public ADBInstance(string adbPathL)
         {
             ADBPath = adbPathL;
@@ -333,6 +335,35 @@ namespace AC.AndroidUtils.ADB
         public void UninstallApp(AndroidDevice device, string pkgName)
         {
             RunCommand(device, "pm uninstall " + pkgName, false);
+        }
+
+        public ShellResponse RunMultiLineCommand(AndroidDevice device, string multiLineCommand, bool runAsRoot)
+        {
+            string randomName = IOUtil.GenerateRandomFileName("sh");
+            string fileName = Environment.GetEnvironmentVariable("Temp") + randomName;
+
+            StringBuilder swB = new StringBuilder();
+            StringWriter strW = new StringWriter(swB);
+            using (StreamWriter sw = new StreamWriter(new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite)))
+            {
+                strW.WriteLine(SH_HEADER);
+                strW.WriteLine(multiLineCommand.Replace(IOUtil.CRLF, IOUtil.LF));
+
+                strW.Flush();
+                strW.Close();
+
+                swB.Replace(IOUtil.CRLF, IOUtil.LF);      // CRLF -> LF
+
+                sw.Write(swB.ToString());
+            }
+
+            PushFile(device, fileName, "/sdcard/" + randomName);
+
+            ShellResponse r = RunCommand(device, "sh /sdcard/" + randomName, runAsRoot);
+
+            RunCommand(device, "rm /sdcard/" + randomName, false);
+
+            return r;
         }
 
         public string GetApkPathByPackageName(AndroidDevice device, string pkgName)
