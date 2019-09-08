@@ -257,11 +257,32 @@ namespace AC.AndroidUtils.GUI
         }
 
         private void Test_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new PackageManagment(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
-        #endregion
 
         private void PkgMgmt_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new PackageManagment(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
 
-        //private void InstallAPK_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new InstallApplication(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
+        private void DevList_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            if (devList.SelectedIndex == -1) return;
 
+            if (devicesMap[devList.SelectedIndex].Serial.Contains(":"))
+            {
+                string[] addrA = devicesMap[devList.SelectedIndex].Serial.Split(':');
+
+                netADB_ip.Text = addrA[0];
+                netADB_port.Text = addrA[1];
+            }
+        }
+
+        private void DisconnectAll_Click(object sender, System.EventArgs e)
+        {
+            Text = "Disconnecting...";
+            adbi.KillServer();
+            adbi.StartADBServer();
+            LoadDevices();
+            Text = "ADB Utility";
+        }
+
+        //private void InstallAPK_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new InstallApplication(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
+        #endregion
     }
 }

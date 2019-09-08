@@ -46,7 +46,7 @@
             this.search = new System.Windows.Forms.Button();
             this.x = new System.Windows.Forms.Button();
             this.cpPkgName = new System.Windows.Forms.Button();
-            this.start = new System.Windows.Forms.Button();
+            this.dsall = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -236,15 +236,15 @@
             this.cpPkgName.UseVisualStyleBackColor = true;
             this.cpPkgName.Click += new System.EventHandler(this.CpPkgName_Click);
             // 
-            // start
+            // dsall
             // 
-            this.start.Location = new System.Drawing.Point(201, 621);
-            this.start.Name = "start";
-            this.start.Size = new System.Drawing.Size(171, 39);
-            this.start.TabIndex = 15;
-            this.start.Text = "Start App";
-            this.start.UseVisualStyleBackColor = true;
-            this.start.Click += new System.EventHandler(this.Start_Click);
+            this.dsall.Location = new System.Drawing.Point(201, 621);
+            this.dsall.Name = "dsall";
+            this.dsall.Size = new System.Drawing.Size(171, 39);
+            this.dsall.TabIndex = 15;
+            this.dsall.Text = "De-select all";
+            this.dsall.UseVisualStyleBackColor = true;
+            this.dsall.Click += new System.EventHandler(this.Dsall_Click);
             // 
             // PackageManagment
             // 
@@ -252,7 +252,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.close;
             this.ClientSize = new System.Drawing.Size(908, 752);
-            this.Controls.Add(this.start);
+            this.Controls.Add(this.dsall);
             this.Controls.Add(this.cpPkgName);
             this.Controls.Add(this.x);
             this.Controls.Add(this.search);
@@ -300,6 +300,6 @@
         private System.Windows.Forms.Button search;
         private System.Windows.Forms.Button x;
         private System.Windows.Forms.Button cpPkgName;
-        private System.Windows.Forms.Button start;
+        private System.Windows.Forms.Button dsall;
     }
 }

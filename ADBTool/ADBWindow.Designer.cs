@@ -39,6 +39,7 @@
             this.refresh = new System.Windows.Forms.Button();
             this.devList = new System.Windows.Forms.ListBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.pkgMgmt = new System.Windows.Forms.Button();
             this.shell = new System.Windows.Forms.Button();
             this.reboot_recovery = new System.Windows.Forms.Button();
             this.reboot = new System.Windows.Forms.Button();
@@ -52,7 +53,7 @@
             this.adbPath = new System.Windows.Forms.TextBox();
             this.load = new System.Windows.Forms.Button();
             this.test = new System.Windows.Forms.Button();
-            this.pkgMgmt = new System.Windows.Forms.Button();
+            this.disconnectAll = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.devices.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -61,6 +62,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.disconnectAll);
             this.groupBox1.Controls.Add(this.connectNet);
             this.groupBox1.Controls.Add(this.disconnectNet);
             this.groupBox1.Controls.Add(this.label1);
@@ -75,7 +77,7 @@
             // 
             // connectNet
             // 
-            this.connectNet.Location = new System.Drawing.Point(235, 80);
+            this.connectNet.Location = new System.Drawing.Point(47, 80);
             this.connectNet.Name = "connectNet";
             this.connectNet.Size = new System.Drawing.Size(98, 35);
             this.connectNet.TabIndex = 2;
@@ -85,7 +87,7 @@
             // 
             // disconnectNet
             // 
-            this.disconnectNet.Location = new System.Drawing.Point(339, 80);
+            this.disconnectNet.Location = new System.Drawing.Point(151, 80);
             this.disconnectNet.Name = "disconnectNet";
             this.disconnectNet.Size = new System.Drawing.Size(130, 35);
             this.disconnectNet.TabIndex = 3;
@@ -156,6 +158,7 @@
             this.devList.Name = "devList";
             this.devList.Size = new System.Drawing.Size(448, 220);
             this.devList.TabIndex = 4;
+            this.devList.SelectedIndexChanged += new System.EventHandler(this.DevList_SelectedIndexChanged);
             // 
             // groupBox3
             // 
@@ -169,6 +172,16 @@
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Device Operations";
+            // 
+            // pkgMgmt
+            // 
+            this.pkgMgmt.Location = new System.Drawing.Point(241, 36);
+            this.pkgMgmt.Name = "pkgMgmt";
+            this.pkgMgmt.Size = new System.Drawing.Size(196, 37);
+            this.pkgMgmt.TabIndex = 11;
+            this.pkgMgmt.Text = "Package Managment";
+            this.pkgMgmt.UseVisualStyleBackColor = true;
+            this.pkgMgmt.Click += new System.EventHandler(this.PkgMgmt_Click);
             // 
             // shell
             // 
@@ -304,15 +317,15 @@
             this.test.UseVisualStyleBackColor = true;
             this.test.Click += new System.EventHandler(this.Test_Click);
             // 
-            // pkgMgmt
+            // disconnectAll
             // 
-            this.pkgMgmt.Location = new System.Drawing.Point(241, 36);
-            this.pkgMgmt.Name = "pkgMgmt";
-            this.pkgMgmt.Size = new System.Drawing.Size(196, 37);
-            this.pkgMgmt.TabIndex = 11;
-            this.pkgMgmt.Text = "Package Managment";
-            this.pkgMgmt.UseVisualStyleBackColor = true;
-            this.pkgMgmt.Click += new System.EventHandler(this.PkgMgmt_Click);
+            this.disconnectAll.Location = new System.Drawing.Point(287, 80);
+            this.disconnectAll.Name = "disconnectAll";
+            this.disconnectAll.Size = new System.Drawing.Size(153, 35);
+            this.disconnectAll.TabIndex = 4;
+            this.disconnectAll.Text = "Disconnect all";
+            this.disconnectAll.UseVisualStyleBackColor = true;
+            this.disconnectAll.Click += new System.EventHandler(this.DisconnectAll_Click);
             // 
             // ADBWindow
             // 
@@ -368,6 +381,7 @@
         private System.Windows.Forms.Button killADB;
         private System.Windows.Forms.Button test;
         private System.Windows.Forms.Button pkgMgmt;
+        private System.Windows.Forms.Button disconnectAll;
     }
 }
 

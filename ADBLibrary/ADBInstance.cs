@@ -283,8 +283,8 @@ namespace AC.AndroidUtils.ADB
             }
 
             ShellResponse shr = new ShellResponse();
-            shr.stdOut = retS.ToString();
-            shr.stdError = errS.ToString();
+            shr.stdOut = retS.Replace("\r\n\r\n", IOUtil.CRLF).ToString();
+            shr.stdError = errS.Replace("\r\n\r\n", IOUtil.CRLF).ToString();
 
             return shr;
         }
@@ -350,7 +350,7 @@ namespace AC.AndroidUtils.ADB
         public string GetApkPathByPackageName(AndroidDevice device, string pkgName)
         {
             string res = RunCommand(device, "pm path " + pkgName, false).stdOut;
-            return res.Replace("package:", "").Replace("\r\n\r\n", "");
+            return res.Replace("package:", "").Replace(IOUtil.CRLF, "");
         }
 
         /*

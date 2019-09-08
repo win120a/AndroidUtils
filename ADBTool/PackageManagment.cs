@@ -140,12 +140,12 @@ namespace AC.AndroidUtils.GUI
 
         private void Uninstall_Click(object sender, EventArgs e) => RunActsWithConfirm((pkgN) => adbi.UninstallApp(device, pkgN));
 
-        private void RunActs(Callback callback, bool needsConfirm)
+        private bool RunActs(Callback callback, bool needsConfirm)
         {
             if (packagesListbox.SelectedIndices.Count == 0)
             {
                 AlertDialog("Please select at least one package.");
-                return;
+                return false;
             }
 
             StringBuilder messageBuilder = new StringBuilder();
@@ -166,18 +166,20 @@ namespace AC.AndroidUtils.GUI
                 }
 
                 LoadPackages();
+
+                return true;
             }
+
+            return false;
         }
 
-        private void RunActsWithConfirm(Callback callback) => RunActs(callback, true);
-
+        private bool RunActsWithConfirm(Callback callback) => RunActs(callback, true);
         private bool ConfirmDialog(string mess) => MessageBox.Show(mess, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
         private void AlertDialog(string mess) => MessageBox.Show(mess, "Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
         private void Export_Click(object sender, EventArgs e)
         {
-            RunActs((pkgN) => DoExport(pkgN), false);
-            MessageBox.Show("Export successfully.", "Hint");
+            if (RunActs((pkgN) => DoExport(pkgN), false)) MessageBox.Show("Export successfully.", "Hint");
         }
 
         private void DoExport(string pkgN)
@@ -192,7 +194,7 @@ namespace AC.AndroidUtils.GUI
 
             // Copy out the selected apk file to the sdcard. //
             cmdBuilder.Append("cp ").Append(path).Append(" /sdcard/").Append(randomAPKName);
-            adbi.RunCommand(device, cmdBuilder.ToString(), false);
+            ShellResponse shr = adbi.RunCommand(device, cmdBuilder.ToString(), false);
 
             string tempAPKPath = randomTempD + "\\" + randomAPKName;
 
@@ -239,6 +241,7 @@ namespace AC.AndroidUtils.GUI
                     removeMap.Add(kvp.Key, kvp.Value);
                 }
             }
+
 
             foreach (KeyValuePair<int, string> kvp2 in removeMap)
             {
@@ -312,27 +315,19 @@ namespace AC.AndroidUtils.GUI
 
         private void Disable_Click(object sender, EventArgs e)
         {
-            if(ConfirmDialog("This action requires ROOT PERMISSIONS, please make sure that your device is rooted.\n\nIs your device rooted?"))
+            if(ConfirmDialog("This action requires ROOT PERMISSION, please make sure that your device is rooted.\n\nIs your device rooted?"))
                 RunActs((pkgN) => adbi.RunCommand(device, "pm disable " + pkgN, true), true);
         }
 
         private void Enable_Click(object sender, EventArgs e)
         {
-            if(ConfirmDialog("This action requires ROOT PERMISSIONS, please make sure that your device is rooted.\n\nIs your device rooted?"))
+            if(ConfirmDialog("This action requires ROOT PERMISSION, please make sure that your device is rooted.\n\nIs your device rooted?"))
                 RunActs((pkgN) => adbi.RunCommand(device, "pm enable " + pkgN, true), false);
         }
 
-        private void Start_Click(object sender, EventArgs e)
+        private void Dsall_Click(object sender, EventArgs e)
         {
-            if(packagesListbox.SelectedIndices.Count != 1)
-            {
-                AlertDialog("Only one package can be selected.");
-            }
-            else
-            {
-                AlertDialog("This action may not work due to the limitation of the app.");
-                adbi.RunCommand(device, "am start " + pkgMap[packagesListbox.SelectedIndex], false);
-            }
+            packagesListbox.ClearSelected();
         }
     }
 }
