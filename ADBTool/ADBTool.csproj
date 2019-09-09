@@ -58,6 +58,12 @@
       <DependentUpon>ADBWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="ADBMain.cs" />
+    <Compile Include="FileManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileManager.Designer.cs">
+      <DependentUpon>FileManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="InstallApplication.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -83,6 +89,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ADBWindow.resx">
       <DependentUpon>ADBWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileManager.resx">
+      <DependentUpon>FileManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InstallApplication.resx">
       <DependentUpon>InstallApplication.cs</DependentUpon>

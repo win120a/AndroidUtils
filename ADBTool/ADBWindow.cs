@@ -256,7 +256,7 @@ namespace AC.AndroidUtils.GUI
             SetButtonsAvailableOrNot(true);
         }
 
-        private void Test_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new PackageManagment(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
+        private void Test_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new FileManager(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
 
         private void PkgMgmt_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new PackageManagment(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
 
