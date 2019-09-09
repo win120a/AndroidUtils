@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.disconnectAll = new System.Windows.Forms.Button();
             this.connectNet = new System.Windows.Forms.Button();
             this.disconnectNet = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -53,7 +54,6 @@
             this.adbPath = new System.Windows.Forms.TextBox();
             this.load = new System.Windows.Forms.Button();
             this.test = new System.Windows.Forms.Button();
-            this.disconnectAll = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.devices.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -74,6 +74,16 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Network Debugging";
+            // 
+            // disconnectAll
+            // 
+            this.disconnectAll.Location = new System.Drawing.Point(287, 80);
+            this.disconnectAll.Name = "disconnectAll";
+            this.disconnectAll.Size = new System.Drawing.Size(153, 35);
+            this.disconnectAll.TabIndex = 4;
+            this.disconnectAll.Text = "Disconnect all";
+            this.disconnectAll.UseVisualStyleBackColor = true;
+            this.disconnectAll.Click += new System.EventHandler(this.DisconnectAll_Click);
             // 
             // connectNet
             // 
@@ -110,6 +120,7 @@
             this.netADB_port.Name = "netADB_port";
             this.netADB_port.Size = new System.Drawing.Size(67, 28);
             this.netADB_port.TabIndex = 1;
+            this.netADB_port.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.HandlePortFieldKeyPress);
             // 
             // netADB_ip
             // 
@@ -316,16 +327,6 @@
             this.test.Text = "Test Function";
             this.test.UseVisualStyleBackColor = true;
             this.test.Click += new System.EventHandler(this.Test_Click);
-            // 
-            // disconnectAll
-            // 
-            this.disconnectAll.Location = new System.Drawing.Point(287, 80);
-            this.disconnectAll.Name = "disconnectAll";
-            this.disconnectAll.Size = new System.Drawing.Size(153, 35);
-            this.disconnectAll.TabIndex = 4;
-            this.disconnectAll.Text = "Disconnect all";
-            this.disconnectAll.UseVisualStyleBackColor = true;
-            this.disconnectAll.Click += new System.EventHandler(this.DisconnectAll_Click);
             // 
             // ADBWindow
             // 

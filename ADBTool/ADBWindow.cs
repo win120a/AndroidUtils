@@ -282,7 +282,17 @@ namespace AC.AndroidUtils.GUI
             Text = "ADB Utility";
         }
 
-        //private void InstallAPK_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new InstallApplication(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
+        private void HandlePortFieldKeyPress(object sender, KeyPressEventArgs kpea)
+        {
+            /*
+             * 48 = '0'   57 = '9'   8 = '<bksp>'
+             */
+
+            if ((kpea.KeyChar < 48 || kpea.KeyChar > 57) & kpea.KeyChar != 8)
+            {
+                kpea.Handled = true;     // Get rid of the invaild character.
+            }
+        }
         #endregion
     }
 }
