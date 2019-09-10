@@ -34,6 +34,8 @@ namespace AC.AndroidUtils.GUI
         private AndroidDevice device;
         private ADBInstance adbi;
         private bool inRoot = false;
+        private ClipboardObject clipboard;
+        private ADBFileManagmentService adbFM;
 
         public FileManager(AndroidDevice dev, ADBInstance i)
         {
@@ -41,6 +43,7 @@ namespace AC.AndroidUtils.GUI
             device = dev;
             adbi = i;
             Text = "File Manager [Device Serial: " + dev.Serial + "]";
+            adbFM = new ADBFileManagmentService(dev, adbi);
         }
 
         private void FileManager_Load(object sender, EventArgs e)
@@ -99,29 +102,23 @@ namespace AC.AndroidUtils.GUI
         private void FileView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             TreeNode node = fileView.SelectedNode;
+            string pathToFile = GetFullPath(node);
+            FSObjectStatus fos = adbFM.GetFSObjectStatus(pathToFile, inRoot);
 
-            ShellResponse sr = adbi.RunCommand(device, "cd " + GetFullPath(node) + "; ls", inRoot);
-            // ShellResponse sr = adbi.RunCommand(device, "ls " + GetFullPath(node), inRoot);
-            if (node.Text.Contains(PERM_HINT_WORDS)) return;
-            if (sr.stdOut.Contains("Not a directory") && sr.stdOut.Contains("cd: ")) return;   // File
-            if (sr.stdOut.Contains("Permission denied") && (sr.stdOut.Contains("opendir") || sr.stdOut.Contains("cd: ")))  // Permission Denied.
+            if (fos == FSObjectStatus.PermissionDenied)    // Permission Denied.
             {
-                node.Text += PERM_HINT_WORDS;
+                node.Text += pathToFile.Contains(PERM_HINT_WORDS) ? "" : PERM_HINT_WORDS;
                 return;
             }
 
+            if (fos == FSObjectStatus.File)
+                return;
+
             if (node.Nodes.Count != 0) node.Nodes.Clear();
 
-            using (StringReader strR = new StringReader(sr.stdOut))
+            foreach (string s in adbFM.ListFiles(pathToFile, inRoot))
             {
-                Encoding enU = Encoding.UTF8;
-                Encoding enGB = Encoding.Default;
-
-                string line;
-                while ((line = strR.ReadLine()) != null)
-                {
-                    node.Nodes.Add(enU.GetString(enGB.GetBytes(line)));   // GBK -> Unicode, may not work in other countries.
-                }
+                node.Nodes.Add(s);
             }
         }
 
@@ -153,27 +150,32 @@ namespace AC.AndroidUtils.GUI
             import.Location = new Point(import.Location.X, buttons_y_first);
             export.Location = new Point(export.Location.X, buttons_y_first);
             delete.Location = new Point(delete.Location.X, buttons_y_first);
+            cut.Location = new Point(cut.Location.X, buttons_y_first);
+            copy.Location = new Point(copy.Location.X, buttons_y_first);
+            paste.Location = new Point(paste.Location.X, buttons_y_first);
+            viewCB.Location = new Point(viewCB.Location.X, buttons_y_first);
 
             // Second Line //
             int buttons_y_second = buttons_y_first + 30;
             refresh.Location = new Point(refresh.Location.X, buttons_y_second);
+            useRoot.Location = new Point(useRoot.Location.X, buttons_y_second);
         }
 
         private void Delete_Click(object sender, EventArgs e)
         {
             if (fileView.SelectedNode == null) return;
 
-            string path = GetFullPath(fileView.SelectedNode);
+            string path = GetFullPath(fileView.SelectedNode).Replace(PERM_HINT_WORDS, "");
 
             if (ConfirmDialog("Are you sure? \n\nThe file (folder) you're going to delete is: " + path))
             {
-                if (IsFile(fileView.SelectedNode))
+                try
                 {
-                    adbi.RunCommand(device, "rm " + path, inRoot);
+                    adbFM.DeleteFile(path, inRoot);
                 }
-                else
+                catch (IOException ioe)
                 {
-                    adbi.RunCommand(device, "rm -rf " + path, inRoot);
+                    MessageBox.Show("Error when processing your request.\n\nMessage: \n" + ioe.Message, "Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -182,8 +184,7 @@ namespace AC.AndroidUtils.GUI
 
         private bool IsFile(TreeNode node)
         {
-            ShellResponse sr = adbi.RunCommand(device, "cd " + GetFullPath(node), inRoot);
-            return sr.stdOut.Contains("Not a directory") && sr.stdOut.Contains("cd: ");
+            return adbFM.GetFSObjectStatus(GetFullPath(node), inRoot) == FSObjectStatus.File;
         }
 
         private void Import_Click(object sender, EventArgs e)
@@ -212,6 +213,64 @@ namespace AC.AndroidUtils.GUI
             if (useRoot.Checked) MessageBox.Show("Please make sure that your device is rooted.");
             inRoot = useRoot.Checked;
             LoadRootPath();
+        }
+
+        private void Cut_Click(object sender, EventArgs e)
+        {
+            SetClipboard(true);
+        }
+
+        private void Copy_Click(object sender, EventArgs e)
+        {
+            SetClipboard(false);
+        }
+
+        private void SetClipboard(bool delFlag)
+        {
+            if (fileView.SelectedNode == null || !IsFile(fileView.SelectedNode))
+            {
+                MessageBox.Show("Invaild selection.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            clipboard = new ClipboardObject()
+            {
+                node = fileView.SelectedNode,
+                deleteFlag = delFlag
+            };
+
+            paste.Enabled = true;
+        }
+
+
+        private void Paste_Click(object sender, EventArgs e)
+        {
+            if (fileView.SelectedNode == null || IsFile(fileView.SelectedNode))
+            {
+                MessageBox.Show("Invaild selection.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append(clipboard.deleteFlag ? "mv " : "cp ");
+            stringBuilder.Append("\"" + GetFullPath(clipboard.node) + "\"");
+            stringBuilder.Append("\"" + GetFullPath(fileView.SelectedNode) + "\"");
+
+            // MessageBox.Show(stringBuilder.ToString());
+            adbi.RunCommand(device, stringBuilder.ToString(), inRoot);
+
+            paste.Enabled = false;
+        }
+
+        private void ViewCB_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("File: " + (clipboard.node == null ? "<none>" : GetFullPath(clipboard.node)));
+        }
+
+        private struct ClipboardObject
+        {
+            internal TreeNode node;
+            internal bool deleteFlag;
         }
     }
 }

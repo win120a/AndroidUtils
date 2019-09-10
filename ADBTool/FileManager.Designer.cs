@@ -33,8 +33,11 @@
             this.export = new System.Windows.Forms.Button();
             this.delete = new System.Windows.Forms.Button();
             this.refresh = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.cut = new System.Windows.Forms.Button();
             this.useRoot = new System.Windows.Forms.CheckBox();
+            this.copy = new System.Windows.Forms.Button();
+            this.paste = new System.Windows.Forms.Button();
+            this.viewCB = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // fileView
@@ -86,33 +89,68 @@
             this.refresh.UseVisualStyleBackColor = true;
             this.refresh.Click += new System.EventHandler(this.Refresh_Click);
             // 
-            // button2
+            // cut
             // 
-            this.button2.Location = new System.Drawing.Point(559, 541);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(118, 41);
-            this.button2.TabIndex = 5;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
+            this.cut.Location = new System.Drawing.Point(435, 541);
+            this.cut.Name = "cut";
+            this.cut.Size = new System.Drawing.Size(118, 41);
+            this.cut.TabIndex = 5;
+            this.cut.Text = "Cut";
+            this.cut.UseVisualStyleBackColor = true;
+            this.cut.Click += new System.EventHandler(this.Cut_Click);
             // 
             // useRoot
             // 
             this.useRoot.AutoSize = true;
             this.useRoot.Location = new System.Drawing.Point(153, 598);
             this.useRoot.Name = "useRoot";
-            this.useRoot.Size = new System.Drawing.Size(160, 22);
+            this.useRoot.Size = new System.Drawing.Size(169, 22);
             this.useRoot.TabIndex = 6;
-            this.useRoot.Text = "Root User Mode";
+            this.useRoot.Text = "Super User Mode";
             this.useRoot.UseVisualStyleBackColor = true;
             this.useRoot.CheckedChanged += new System.EventHandler(this.UseRoot_CheckedChanged);
+            // 
+            // copy
+            // 
+            this.copy.Location = new System.Drawing.Point(559, 541);
+            this.copy.Name = "copy";
+            this.copy.Size = new System.Drawing.Size(118, 41);
+            this.copy.TabIndex = 7;
+            this.copy.Text = "Copy";
+            this.copy.UseVisualStyleBackColor = true;
+            this.copy.Click += new System.EventHandler(this.Copy_Click);
+            // 
+            // paste
+            // 
+            this.paste.Enabled = false;
+            this.paste.Location = new System.Drawing.Point(683, 541);
+            this.paste.Name = "paste";
+            this.paste.Size = new System.Drawing.Size(118, 41);
+            this.paste.TabIndex = 8;
+            this.paste.Text = "Paste";
+            this.paste.UseVisualStyleBackColor = true;
+            this.paste.Click += new System.EventHandler(this.Paste_Click);
+            // 
+            // viewCB
+            // 
+            this.viewCB.Location = new System.Drawing.Point(807, 541);
+            this.viewCB.Name = "viewCB";
+            this.viewCB.Size = new System.Drawing.Size(118, 41);
+            this.viewCB.TabIndex = 9;
+            this.viewCB.Text = "Clipboard";
+            this.viewCB.UseVisualStyleBackColor = true;
+            this.viewCB.Click += new System.EventHandler(this.ViewCB_Click);
             // 
             // FileManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(959, 636);
+            this.Controls.Add(this.viewCB);
+            this.Controls.Add(this.paste);
+            this.Controls.Add(this.copy);
             this.Controls.Add(this.useRoot);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.cut);
             this.Controls.Add(this.refresh);
             this.Controls.Add(this.delete);
             this.Controls.Add(this.export);
@@ -134,7 +172,10 @@
         private System.Windows.Forms.Button export;
         private System.Windows.Forms.Button delete;
         private System.Windows.Forms.Button refresh;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button cut;
         private System.Windows.Forms.CheckBox useRoot;
+        private System.Windows.Forms.Button copy;
+        private System.Windows.Forms.Button paste;
+        private System.Windows.Forms.Button viewCB;
     }
 }
