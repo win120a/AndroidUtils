@@ -30,22 +30,32 @@ namespace AC.AndroidUtils.GUI
 {
     public partial class FileManager : Form
     {
+        private const string PERM_HINT_WORDS = "  [Can't access due to the insufficient permission]";
         private AndroidDevice device;
         private ADBInstance adbi;
+        private bool inRoot = false;
 
         public FileManager(AndroidDevice dev, ADBInstance i)
         {
             InitializeComponent();
             device = dev;
             adbi = i;
+            Text = "File Manager [Device Serial: " + dev.Serial + "]";
         }
 
         private void FileManager_Load(object sender, EventArgs e)
         {
+            LoadRootPath();
+            OnSizeChanged(this, null);
+        }
+
+        private void LoadRootPath()
+        {
+            fileView.Nodes.Clear();
+
             fileView.Nodes.Add("/");
 
-
-            ShellResponse sr = adbi.RunCommand(device, "cd /; ls", false);
+            ShellResponse sr = adbi.RunCommand(device, "ls /", inRoot);
 
             using (StringReader strR = new StringReader(sr.stdOut))
             {
@@ -58,8 +68,6 @@ namespace AC.AndroidUtils.GUI
 
             fileView.SelectedNode = fileView.Nodes[0];
             fileView.SelectedNode.Expand();
-
-            OnSizeChanged(this, null);
         }
 
         private string GetFullPath(TreeNode n)
@@ -67,9 +75,10 @@ namespace AC.AndroidUtils.GUI
             List<string> pathL = new List<string>();
 
             TreeNode node = n;
-            pathL.Add(n.Text);
+            if (n.Text != "/") pathL.Add(n.Text);
             while ((node = node.Parent) != null)
             {
+                if (node.Text == "/") continue;
                 pathL.Add(node.Text);
             }
 
@@ -82,7 +91,7 @@ namespace AC.AndroidUtils.GUI
                 pathBuilder.Append("/");
             }
 
-            pathBuilder.Remove(pathBuilder.Length - 1, 1);
+            if(pathBuilder.ToString() != "/") pathBuilder.Remove(pathBuilder.Length - 1, 1);
 
             return pathBuilder.ToString();
         }
@@ -91,23 +100,27 @@ namespace AC.AndroidUtils.GUI
         {
             TreeNode node = fileView.SelectedNode;
 
-            ShellResponse sr = adbi.RunCommand(device, "cd " + GetFullPath(node) + "; ls", false);
+            ShellResponse sr = adbi.RunCommand(device, "cd " + GetFullPath(node) + "; ls", inRoot);
+            // ShellResponse sr = adbi.RunCommand(device, "ls " + GetFullPath(node), inRoot);
+            if (node.Text.Contains(PERM_HINT_WORDS)) return;
+            if (sr.stdOut.Contains("Not a directory") && sr.stdOut.Contains("cd: ")) return;   // File
+            if (sr.stdOut.Contains("Permission denied") && (sr.stdOut.Contains("opendir") || sr.stdOut.Contains("cd: ")))  // Permission Denied.
+            {
+                node.Text += PERM_HINT_WORDS;
+                return;
+            }
 
-            if (sr.stdOut.Contains("Not a directory") && sr.stdOut.Contains("cd: ")) return;
             if (node.Nodes.Count != 0) node.Nodes.Clear();
 
             using (StringReader strR = new StringReader(sr.stdOut))
             {
-                Encoding enA = Encoding.ASCII;
                 Encoding enU = Encoding.UTF8;
                 Encoding enGB = Encoding.Default;
 
                 string line;
                 while ((line = strR.ReadLine()) != null)
                 {
-                    node.Nodes.Add(enU.GetString(enGB.GetBytes(line)));
-                    //if (line.Contains("2013")) MessageBox.Show(enU.GetString(enA.GetBytes(line)));
-                    //node.Nodes.Add(enU.GetString(enGB.GetBytes(line)));   // GBK -> Unicode
+                    node.Nodes.Add(enU.GetString(enGB.GetBytes(line)));   // GBK -> Unicode, may not work in other countries.
                 }
             }
         }
@@ -120,13 +133,14 @@ namespace AC.AndroidUtils.GUI
             SaveFileDialog sfd = new SaveFileDialog();
             string[] fullPA = fullPath.Split('.');
             sfd.Filter = fullPA[fullPA.Length - 1].ToUpper() + " File|*." + fullPA[fullPA.Length - 1].ToLower();
+
             if (sfd.ShowDialog() == DialogResult.OK) adbi.PullFileFromDevice(device, fullPath, sfd.FileName);
         }
 
         private void OnSizeChanged(object sender, EventArgs e)
         {
             int fv_w = Size.Width - 30;
-            int fv_h = Size.Height - 100;
+            int fv_h = Size.Height - 120;
 
             fileView.Size = new Size()
             {
@@ -134,10 +148,70 @@ namespace AC.AndroidUtils.GUI
                 Width = fv_w
             };
 
-            int buttons_y = fv_h + 10;
+            // First Line //
+            int buttons_y_first = fv_h + 10;
+            import.Location = new Point(import.Location.X, buttons_y_first);
+            export.Location = new Point(export.Location.X, buttons_y_first);
+            delete.Location = new Point(delete.Location.X, buttons_y_first);
 
-            import.Location = new Point(import.Location.X, buttons_y);
-            export.Location = new Point(export.Location.X, buttons_y);
+            // Second Line //
+            int buttons_y_second = buttons_y_first + 30;
+            refresh.Location = new Point(refresh.Location.X, buttons_y_second);
+        }
+
+        private void Delete_Click(object sender, EventArgs e)
+        {
+            if (fileView.SelectedNode == null) return;
+
+            string path = GetFullPath(fileView.SelectedNode);
+
+            if (ConfirmDialog("Are you sure? \n\nThe file (folder) you're going to delete is: " + path))
+            {
+                if (IsFile(fileView.SelectedNode))
+                {
+                    adbi.RunCommand(device, "rm " + path, inRoot);
+                }
+                else
+                {
+                    adbi.RunCommand(device, "rm -rf " + path, inRoot);
+                }
+            }
+        }
+
+        private bool ConfirmDialog(string mess) => MessageBox.Show(mess, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
+        private bool IsFile(TreeNode node)
+        {
+            ShellResponse sr = adbi.RunCommand(device, "cd " + GetFullPath(node), inRoot);
+            return sr.stdOut.Contains("Not a directory") && sr.stdOut.Contains("cd: ");
+        }
+
+        private void Import_Click(object sender, EventArgs e)
+        {
+            if (fileView.SelectedNode == null || IsFile(fileView.SelectedNode))
+            {
+                MessageBox.Show("Invaild selection.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                adbi.PushFile(device, ofd.FileName, GetFullPath(fileView.SelectedNode) + "/" + Path.GetFileName(ofd.FileName));
+            }
+        }
+
+        private void Refresh_Click(object sender, EventArgs e)
+        {
+            LoadRootPath();
+        }
+
+        private void UseRoot_CheckedChanged(object sender, EventArgs e)
+        {
+            if (useRoot.Checked) MessageBox.Show("Please make sure that your device is rooted.");
+            inRoot = useRoot.Checked;
+            LoadRootPath();
         }
     }
 }
