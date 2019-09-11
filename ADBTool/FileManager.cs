@@ -36,6 +36,8 @@ namespace AC.AndroidUtils.GUI
         private bool inRoot = false;
         private ClipboardObject clipboard;
         private ADBFileManagmentService adbFM;
+        private Dictionary<string, FSObjectStatus> objStatusCache;
+        private Dictionary<string, List<string>> responseCache;    // <path, FileList>
 
         public FileManager(AndroidDevice dev, ADBInstance i)
         {
@@ -44,6 +46,8 @@ namespace AC.AndroidUtils.GUI
             adbi = i;
             Text = "File Manager [Device Serial: " + dev.Serial + "]";
             adbFM = new ADBFileManagmentService(dev, adbi);
+            objStatusCache = new Dictionary<string, FSObjectStatus>();
+            responseCache = new Dictionary<string, List<string>>();
         }
 
         private void FileManager_Load(object sender, EventArgs e)
@@ -55,6 +59,8 @@ namespace AC.AndroidUtils.GUI
         private void LoadRootPath()
         {
             fileView.Nodes.Clear();
+            responseCache.Clear();
+            objStatusCache.Clear();
 
             fileView.Nodes.Add("/");
 
@@ -94,16 +100,42 @@ namespace AC.AndroidUtils.GUI
                 pathBuilder.Append("/");
             }
 
-            if(pathBuilder.ToString() != "/") pathBuilder.Remove(pathBuilder.Length - 1, 1);
+            if (pathBuilder.ToString() != "/") pathBuilder.Remove(pathBuilder.Length - 1, 1);
 
             return pathBuilder.ToString();
+        }
+
+        private FSObjectStatus GetFSObjectStatusWithCache(string path)
+        {
+            if (objStatusCache.ContainsKey(path)) return objStatusCache[path];
+            else
+            {
+                FSObjectStatus s = adbFM.GetFSObjectStatus(path, inRoot);
+                objStatusCache.Add(path, s);
+                return s;
+            }
+        }
+
+        private List<string> ListFilesWithCache(string path)
+        {
+            if (responseCache.ContainsKey(path))
+            {
+                return responseCache[path];
+            }
+            else
+            {
+                List<string> list = adbFM.ListFiles(path, inRoot);
+                responseCache.Add(path, list);
+                return list;
+            }
         }
 
         private void FileView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             TreeNode node = fileView.SelectedNode;
             string pathToFile = GetFullPath(node);
-            FSObjectStatus fos = adbFM.GetFSObjectStatus(pathToFile, inRoot);
+            //FSObjectStatus fos = adbFM.GetFSObjectStatus(pathToFile, inRoot);
+            FSObjectStatus fos = GetFSObjectStatusWithCache(pathToFile);
 
             if (fos == FSObjectStatus.PermissionDenied)    // Permission Denied.
             {
@@ -116,7 +148,7 @@ namespace AC.AndroidUtils.GUI
 
             if (node.Nodes.Count != 0) node.Nodes.Clear();
 
-            foreach (string s in adbFM.ListFiles(pathToFile, inRoot))
+            foreach (string s in ListFilesWithCache(pathToFile))
             {
                 node.Nodes.Add(s);
             }
@@ -184,7 +216,7 @@ namespace AC.AndroidUtils.GUI
 
         private bool IsFile(TreeNode node)
         {
-            return adbFM.GetFSObjectStatus(GetFullPath(node), inRoot) == FSObjectStatus.File;
+            return GetFSObjectStatusWithCache(GetFullPath(node)) == FSObjectStatus.File;
         }
 
         private void Import_Click(object sender, EventArgs e)
@@ -251,13 +283,14 @@ namespace AC.AndroidUtils.GUI
                 return;
             }
 
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(clipboard.deleteFlag ? "mv " : "cp ");
-            stringBuilder.Append("\"" + GetFullPath(clipboard.node) + "\"");
-            stringBuilder.Append("\"" + GetFullPath(fileView.SelectedNode) + "\"");
-
-            // MessageBox.Show(stringBuilder.ToString());
-            adbi.RunCommand(device, stringBuilder.ToString(), inRoot);
+            if (clipboard.deleteFlag)
+            {
+                adbFM.MoveFile(GetFullPath(clipboard.node), GetFullPath(fileView.SelectedNode), inRoot);
+            }
+            else
+            {
+                adbFM.CopyFile(GetFullPath(clipboard.node), GetFullPath(fileView.SelectedNode), inRoot);
+            }
 
             paste.Enabled = false;
         }

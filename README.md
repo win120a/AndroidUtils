@@ -1,6 +1,5 @@
 # AndroidUtils
-
-A collection of utils for Android devices, which is under slow development
+A collection of utils for Android devices, which is under slow development.
 
 # License
 GPLV3

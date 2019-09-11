@@ -1,4 +1,23 @@
-﻿using AC.AndroidUtils.Shared;
+﻿/*
+    This is a part of AndroidUtils.
+
+    Copyright (C) 2011-2019 Andy Cheung
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+using AC.AndroidUtils.Shared;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -48,6 +67,8 @@ namespace AC.AndroidUtils.ADB
             ShellResponse sr = adbi.RunMultiLineCommand(device, cmdB.ToString(), inRoot);
 
             List<string> fileNames = new List<string>();
+            List<string> folders = new List<string>();
+            List<string> result = new List<string>();
 
             using (StringReader strR = new StringReader(sr.stdOut))
             {
@@ -57,13 +78,31 @@ namespace AC.AndroidUtils.ADB
                 string line;
                 while ((line = strR.ReadLine()) != null)
                 {
-                    fileNames.Add(enU.GetString(enGB.GetBytes(line)));   // GBK -> Unicode, may not work in other countries.
+                    if (line.Contains("."))
+                    {
+                        fileNames.Add(enU.GetString(enGB.GetBytes(line)));
+                    }
+                    else
+                    {
+                        folders.Add(enU.GetString(enGB.GetBytes(line)));   // GBK -> Unicode, may not work in other countries.
+                    }
                 }
             }
 
             fileNames.Sort();
+            folders.Sort();
 
-            return fileNames;
+            foreach(string s in folders)
+            {
+                result.Add(s);
+            }
+
+            foreach(string s in fileNames)
+            {
+                result.Add(s);
+            }
+
+            return result;
         }
 
         public void DeleteFile(string path, bool inRoot)
@@ -89,12 +128,13 @@ namespace AC.AndroidUtils.ADB
             }
         }
 
-        public void MoveFile(string orig, string dest)
+        public void MoveFile(string orig, string dest, bool inRoot)
         {
-
+            CopyFile(orig, dest, inRoot);
+            DeleteFile(orig, inRoot);
         }
 
-        public void CopyFileTo(string orig, string dest, bool inRoot)
+        public void CopyFile(string orig, string dest, bool inRoot)
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("cp ");
