@@ -44,6 +44,7 @@
     <Compile Include="ADBInstaller.cs" />
     <Compile Include="ADBInstance.cs" />
     <Compile Include="ADBFileManagmentService.cs" />
+    <Compile Include="Interfaces\IFileManagmentService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

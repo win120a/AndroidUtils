@@ -38,6 +38,7 @@
             this.copy = new System.Windows.Forms.Button();
             this.paste = new System.Windows.Forms.Button();
             this.viewCB = new System.Windows.Forms.Button();
+            this.chkFS = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // fileView
@@ -141,11 +142,22 @@
             this.viewCB.UseVisualStyleBackColor = true;
             this.viewCB.Click += new System.EventHandler(this.ViewCB_Click);
             // 
+            // chkFS
+            // 
+            this.chkFS.Location = new System.Drawing.Point(435, 588);
+            this.chkFS.Name = "chkFS";
+            this.chkFS.Size = new System.Drawing.Size(242, 40);
+            this.chkFS.TabIndex = 10;
+            this.chkFS.Text = "Check Free Space";
+            this.chkFS.UseVisualStyleBackColor = true;
+            this.chkFS.Click += new System.EventHandler(this.ChkFS_Click);
+            // 
             // FileManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(959, 636);
+            this.Controls.Add(this.chkFS);
             this.Controls.Add(this.viewCB);
             this.Controls.Add(this.paste);
             this.Controls.Add(this.copy);
@@ -177,5 +189,6 @@
         private System.Windows.Forms.Button copy;
         private System.Windows.Forms.Button paste;
         private System.Windows.Forms.Button viewCB;
+        private System.Windows.Forms.Button chkFS;
     }
 }

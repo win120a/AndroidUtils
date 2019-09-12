@@ -18,6 +18,7 @@
 */
 
 using AC.AndroidUtils.Shared;
+using AC.AndroidUtils.ADB.Interfaces;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -27,7 +28,7 @@ namespace AC.AndroidUtils.ADB
     /// <summary>
     /// Provides a series of file managment feature through ADB shell only.
     /// </summary>
-    public class ADBFileManagmentService
+    public class ADBFileManagmentService : IFileManagmentService
     {
         private const int MAXIUM_TOLERATE_RESPONSE_LENGTH = 2;
         private AndroidDevice device;
@@ -45,10 +46,11 @@ namespace AC.AndroidUtils.ADB
             StringBuilder cmdB = new StringBuilder();
             cmdB.AppendLine("cd " + pathToObject);
             cmdB.AppendLine("ls");
-            ShellResponse sr = adbi.RunMultiLineCommand(device, cmdB.ToString(), inRoot);
 
             if (pathToObject.Contains(PERM_HINT_WORDS))
                 return FSObjectStatus.PermissionDenied;
+
+            ShellResponse sr = adbi.RunMultiLineCommand(device, cmdB.ToString(), inRoot);
 
             if (sr.stdOut.Contains("Not a directory") && sr.stdOut.Contains("cd: "))
                 return FSObjectStatus.File;
@@ -63,7 +65,7 @@ namespace AC.AndroidUtils.ADB
         {
             StringBuilder cmdB = new StringBuilder();
             cmdB.AppendLine("cd " + path);
-            cmdB.AppendLine("ls");
+            cmdB.AppendLine("ls -a");
             ShellResponse sr = adbi.RunMultiLineCommand(device, cmdB.ToString(), inRoot);
 
             List<string> fileNames = new List<string>();
@@ -78,13 +80,13 @@ namespace AC.AndroidUtils.ADB
                 string line;
                 while ((line = strR.ReadLine()) != null)
                 {
-                    if (line.Contains("."))
+                    if (line.Contains(".") && line.ToCharArray()[0] != '.')
                     {
                         fileNames.Add(enU.GetString(enGB.GetBytes(line)));
                     }
                     else
                     {
-                        folders.Add(enU.GetString(enGB.GetBytes(line)));   // GBK -> Unicode, may not work in other countries.
+                        folders.Add(enU.GetString(enGB.GetBytes(line)));   // GBK -> UTF-8, may not work in other countries.
                     }
                 }
             }
@@ -143,10 +145,5 @@ namespace AC.AndroidUtils.ADB
 
             adbi.RunCommand(device, stringBuilder.ToString(), inRoot);
         }
-    }
-
-    public enum FSObjectStatus
-    {
-        Directory, File, PermissionDenied
     }
 }

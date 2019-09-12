@@ -54,6 +54,7 @@
             this.adbPath = new System.Windows.Forms.TextBox();
             this.load = new System.Windows.Forms.Button();
             this.test = new System.Windows.Forms.Button();
+            this.fileManager = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.devices.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -173,6 +174,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.fileManager);
             this.groupBox3.Controls.Add(this.pkgMgmt);
             this.groupBox3.Controls.Add(this.shell);
             this.groupBox3.Controls.Add(this.reboot_recovery);
@@ -328,6 +330,16 @@
             this.test.UseVisualStyleBackColor = true;
             this.test.Click += new System.EventHandler(this.Test_Click);
             // 
+            // fileManager
+            // 
+            this.fileManager.Location = new System.Drawing.Point(241, 81);
+            this.fileManager.Name = "fileManager";
+            this.fileManager.Size = new System.Drawing.Size(196, 37);
+            this.fileManager.TabIndex = 12;
+            this.fileManager.Text = "File Manager";
+            this.fileManager.UseVisualStyleBackColor = true;
+            this.fileManager.Click += new System.EventHandler(this.FileManager_Click);
+            // 
             // ADBWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
@@ -383,6 +395,7 @@
         private System.Windows.Forms.Button test;
         private System.Windows.Forms.Button pkgMgmt;
         private System.Windows.Forms.Button disconnectAll;
+        private System.Windows.Forms.Button fileManager;
     }
 }
 

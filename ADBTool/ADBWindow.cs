@@ -293,6 +293,8 @@ namespace AC.AndroidUtils.GUI
                 kpea.Handled = true;     // Get rid of the invaild character.
             }
         }
+
+        private void FileManager_Click(object sender, System.EventArgs e) => new FileManager(devicesMap[devList.SelectedIndex], adbi).ShowDialog();
         #endregion
     }
 }

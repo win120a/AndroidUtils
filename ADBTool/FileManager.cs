@@ -18,6 +18,7 @@
 */
 
 using AC.AndroidUtils.ADB;
+using AC.AndroidUtils.ADB.Interfaces;
 using AC.AndroidUtils.Shared;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace AC.AndroidUtils.GUI
         private ADBInstance adbi;
         private bool inRoot = false;
         private ClipboardObject clipboard;
-        private ADBFileManagmentService adbFM;
+        private IFileManagmentService adbFM;
         private Dictionary<string, FSObjectStatus> objStatusCache;
         private Dictionary<string, List<string>> responseCache;    // <path, FileList>
 
@@ -64,18 +65,7 @@ namespace AC.AndroidUtils.GUI
 
             fileView.Nodes.Add("/");
 
-            ShellResponse sr = adbi.RunCommand(device, "ls /", inRoot);
-
-            using (StringReader strR = new StringReader(sr.stdOut))
-            {
-                string line;
-                while ((line = strR.ReadLine()) != null)
-                {
-                    fileView.Nodes[0].Nodes.Add(line);
-                }
-            }
-
-            fileView.SelectedNode = fileView.Nodes[0];
+            fileView.SelectedNode = fileView.Nodes[0];   // The event handler of the AfterSelect will be invoked.
             fileView.SelectedNode.Expand();
         }
 
@@ -156,6 +146,12 @@ namespace AC.AndroidUtils.GUI
 
         private void Export_Click(object sender, EventArgs e)
         {
+            if (fileView.SelectedNode == null || !IsFile(fileView.SelectedNode))
+            {
+                MessageBox.Show("Invaild selection.", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             TreeNode node = fileView.SelectedNode;
             string fullPath = GetFullPath(node);
 
@@ -191,6 +187,7 @@ namespace AC.AndroidUtils.GUI
             int buttons_y_second = buttons_y_first + 30;
             refresh.Location = new Point(refresh.Location.X, buttons_y_second);
             useRoot.Location = new Point(useRoot.Location.X, buttons_y_second);
+            chkFS.Location = new Point(chkFS.Location.X, buttons_y_second);
         }
 
         private void Delete_Click(object sender, EventArgs e)
@@ -209,7 +206,17 @@ namespace AC.AndroidUtils.GUI
                 {
                     MessageBox.Show("Error when processing your request.\n\nMessage: \n" + ioe.Message, "Alert", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+
+                ReloadUpper();
             }
+        }
+
+        private void ReloadUpper()
+        {
+            responseCache.Remove(GetFullPath(fileView.SelectedNode.Parent));
+            TreeNode n = fileView.SelectedNode;
+            fileView.SelectedNode = n.Parent != null ? n.Parent : fileView.Nodes[0];
+            fileView.SelectedNode = n;
         }
 
         private bool ConfirmDialog(string mess) => MessageBox.Show(mess, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
@@ -228,10 +235,15 @@ namespace AC.AndroidUtils.GUI
             }
 
             OpenFileDialog ofd = new OpenFileDialog();
-            
+
+            ofd.Multiselect = true;
+
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                adbi.PushFile(device, ofd.FileName, GetFullPath(fileView.SelectedNode) + "/" + Path.GetFileName(ofd.FileName));
+                foreach (string fileName in ofd.FileNames)
+                {
+                    adbi.PushFile(device, fileName, GetFullPath(fileView.SelectedNode) + "/" + Path.GetFileName(ofd.FileName));
+                }
             }
         }
 
@@ -292,6 +304,8 @@ namespace AC.AndroidUtils.GUI
                 adbFM.CopyFile(GetFullPath(clipboard.node), GetFullPath(fileView.SelectedNode), inRoot);
             }
 
+            ReloadUpper();
+
             paste.Enabled = false;
         }
 
@@ -304,6 +318,11 @@ namespace AC.AndroidUtils.GUI
         {
             internal TreeNode node;
             internal bool deleteFlag;
+        }
+
+        private void ChkFS_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(adbi.RunCommand(device, "df", inRoot).stdOut, "Remaining disk space of device " + device.Serial, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
