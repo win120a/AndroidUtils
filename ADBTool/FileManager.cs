@@ -71,22 +71,78 @@ namespace AC.AndroidUtils.GUI
 
         private string GetFullPath(TreeNode n)
         {
-            List<string> pathL = new List<string>();
+            /*
+             * (Legacy Method)
+             * Find the parent of the TreeNode, until the parent is null.
+             * Reverse-iterate over the "parents" (the collection), concat and return the path.
+             */
+
+            //List<string> pathL = new List<string>();
+
+            //TreeNode node = n;
+            //if (n.Text != "/") pathL.Add(n.Text);
+            //while ((node = node.Parent) != null)
+            //{
+            //    if (node.Text == "/") continue;
+            //    pathL.Add(node.Text);
+            //}
+
+            //StringBuilder pathBuilder = new StringBuilder();
+            //pathBuilder.Append("/");
+
+            //for (int i = pathL.Count - 1; i >= 0; i--)
+            //{
+            //    pathBuilder.Append(pathL[i]);
+            //    pathBuilder.Append("/");
+            //}
+
+            //if (pathBuilder.ToString() != "/") pathBuilder.Remove(pathBuilder.Length - 1, 1);
+
+            //return pathBuilder.ToString();
+
+            return GetFullPathThroughStack(n);
+        }
+
+        private static class SafeStack<T>
+        {
+            public static T NULL = default;
+
+            public static T SafePop(Stack<T> s)
+            {
+                try
+                {
+                    return s.Pop();
+                }
+                catch(InvalidOperationException)
+                {
+                    return NULL;
+                }
+            }
+        }
+
+        private string GetFullPathThroughStack(TreeNode n)
+        {
+            /*
+             * Same as the previous method, but it uses Stack to perform "reverse-iterate".
+             */
+            Stack<string> pathS = new Stack<string>();
 
             TreeNode node = n;
-            if (n.Text != "/") pathL.Add(n.Text);
+            pathS.Push(n.Text);
+
             while ((node = node.Parent) != null)
             {
                 if (node.Text == "/") continue;
-                pathL.Add(node.Text);
+                pathS.Push(node.Text);
             }
 
             StringBuilder pathBuilder = new StringBuilder();
             pathBuilder.Append("/");
 
-            for (int i = pathL.Count - 1; i >= 0; i--)
+            string currPathS;
+            while ((currPathS = SafeStack<string>.SafePop(pathS)) != SafeStack<string>.NULL)
             {
-                pathBuilder.Append(pathL[i]);
+                pathBuilder.Append(currPathS);
                 pathBuilder.Append("/");
             }
 
@@ -211,6 +267,9 @@ namespace AC.AndroidUtils.GUI
             }
         }
 
+        /// <summary>
+        /// Reload the current selected node's parent directory.
+        /// </summary>
         private void ReloadUpper()
         {
             responseCache.Remove(GetFullPath(fileView.SelectedNode.Parent));

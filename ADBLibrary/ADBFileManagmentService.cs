@@ -52,13 +52,45 @@ namespace AC.AndroidUtils.ADB
 
             ShellResponse sr = adbi.RunMultiLineCommand(device, cmdB.ToString(), inRoot);
 
-            if (sr.stdOut.Contains("Not a directory") && sr.stdOut.Contains("cd: "))
+            //if ((sr.stdOut.Contains("Not a directory") && sr.stdOut.Contains("cd: ")) || (sr.stdError.Contains("Not a directory") && sr.stdError.Contains("cd: ")))
+            //    return FSObjectStatus.File;
+
+            //if (sr.stdOut.Contains("Permission denied") && (sr.stdOut.Contains("opendir") || sr.stdOut.Contains("cd: ")))  // Permission Denied.
+            //    return FSObjectStatus.PermissionDenied;
+
+            if (ContainsStringInResopnses(sr, "Not a directory", "cd: "))
                 return FSObjectStatus.File;
 
-            if (sr.stdOut.Contains("Permission denied") && (sr.stdOut.Contains("opendir") || sr.stdOut.Contains("cd: ")))  // Permission Denied.
+            if (ContainsStringInResopnses(sr, "Permission denied", "") && (ContainsStringInResopnses(sr, "opendir", "") || ContainsStringInResopnses(sr, "cd: ", "")))
                 return FSObjectStatus.PermissionDenied;
 
             return FSObjectStatus.Directory;
+        }
+
+        private bool ContainsStringInResopnses(ShellResponse r, params string[] stringShouldExistsInResponse)
+        {
+            string[] ss = stringShouldExistsInResponse;
+
+            if (ss.Length < 2) throw new InvalidDataException();
+
+            int i = 0;
+            bool stdO = r.stdOut.Contains(ss[i]);
+            bool stdE = r.stdError.Contains(ss[i]);
+            foreach (string s in ss)
+            {
+                if (i == 0)
+                {
+                    i++;
+                    continue;
+                }
+
+                stdO &= r.stdOut.Contains(s);   // Contains(...) && Contains(...) && ....
+                stdE &= r.stdError.Contains(s);
+
+                i++;
+            }
+
+            return stdO || stdE;
         }
 
         public List<string> ListFiles(string path, bool inRoot)
@@ -80,7 +112,9 @@ namespace AC.AndroidUtils.ADB
                 string line;
                 while ((line = strR.ReadLine()) != null)
                 {
-                    if (line.Contains(".") && line.ToCharArray()[0] != '.')
+                    if (line == "." || line == "..") continue;
+
+                    if (line.Contains(".") && line.ToCharArray()[0] != '.')   // If the filename contains dot and it is not hidden folders.
                     {
                         fileNames.Add(enU.GetString(enGB.GetBytes(line)));
                     }
@@ -110,7 +144,7 @@ namespace AC.AndroidUtils.ADB
         public void DeleteFile(string path, bool inRoot)
         {
             if (GetFSObjectStatus(path, inRoot) == FSObjectStatus.PermissionDenied)
-                throw new IOException("It is a pre-determined Permission Denied Directory.");
+                throw new IOException("It is a pre-determined permission denied Directory.");
 
             ShellResponse sr;
 

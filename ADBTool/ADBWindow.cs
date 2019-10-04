@@ -294,7 +294,7 @@ namespace AC.AndroidUtils.GUI
             }
         }
 
-        private void FileManager_Click(object sender, System.EventArgs e) => new FileManager(devicesMap[devList.SelectedIndex], adbi).ShowDialog();
+        private void FileManager_Click(object sender, System.EventArgs e) => ConfirmDeviceSelection(() => new FileManager(devicesMap[devList.SelectedIndex], adbi).ShowDialog(), false);
         #endregion
     }
 }
